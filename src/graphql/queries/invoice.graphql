@@ -1,0 +1,21 @@
+# import { ADDRESS_FIELDS } from "../fragments/address"
+query AllInvoices {
+  invoice {
+    id
+    client_name
+    client_email
+    client_address {
+      ...ADDRESS_FIELDS
+    }
+    bill_from {
+      ...ADDRESS_FIELDS
+    }
+    invoice_date
+    invoice_items {
+      id
+      name
+      quantity
+      price
+    }
+  }
+}

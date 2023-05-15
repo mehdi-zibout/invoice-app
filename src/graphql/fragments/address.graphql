@@ -1,0 +1,7 @@
+fragment ADDRESS_FIELDS on address {
+  id
+  street_address
+  city
+  post_code
+  country
+}
