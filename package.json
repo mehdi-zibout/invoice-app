@@ -9,7 +9,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "eject": "react-scripts eject",
-   "generate": "graphql-codegen --config codegen.ts"
+    "generate": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.7.14",
@@ -18,12 +18,14 @@
     "@graphql-codegen/typescript": "^3.0.4",
     "@graphql-codegen/typescript-operations": "^3.0.4",
     "@graphql-codegen/typescript-react-apollo": "^3.3.7",
+    "@internationalized/date": "^3.2.0",
     "graphql": "^16.6.0",
     "react": "^18.2.0",
     "react-aria-components": "1.0.0-alpha.3",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
     "react-router-dom": "^6.11.1",
+    "vite-plugin-svgr": "^3.2.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

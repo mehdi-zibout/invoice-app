@@ -51,7 +51,7 @@ export default {
         ],
       },
       boxShadow: {
-        select: "0px 10px 20px 0px #48549F40",
+        popover: "0px 10px 20px 0px #48549F40",
       },
     },
   },
