@@ -1926,42 +1926,107 @@ export type Uuid_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['uuid']>>;
 };
 
+export type Address_FieldsFragment = { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string };
+
+export type Item_FieldsFragment = { __typename?: 'item', id: any, name: string, quantity: any, price: any };
+
+export type UpsertInvoiceMutationVariables = Exact<{
+  object: Invoice_Insert_Input;
+  on_conflict?: InputMaybe<Invoice_On_Conflict>;
+}>;
+
+
+export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name: string, client_email: string, invoice_date: any, client_address?: { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string } | null, bill_from: { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> } | null };
+
 export type AllInvoicesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type AllInvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name: string, client_email: string, invoice_date: any, client_address?: { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string } | null, bill_from: { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> }> };
 
+export const Address_FieldsFragmentDoc = gql`
+    fragment ADDRESS_FIELDS on address {
+  id
+  street_address
+  city
+  post_code
+  country
+}
+    `;
+export const Item_FieldsFragmentDoc = gql`
+    fragment ITEM_FIELDS on item {
+  id
+  name
+  quantity
+  price
+}
+    `;
+export const UpsertInvoiceDocument = gql`
+    mutation UpsertInvoice($object: invoice_insert_input!, $on_conflict: invoice_on_conflict) {
+  insert_invoice_one(object: $object, on_conflict: $on_conflict) {
+    id
+    client_name
+    client_email
+    invoice_date
+    client_address {
+      ...ADDRESS_FIELDS
+    }
+    bill_from {
+      ...ADDRESS_FIELDS
+    }
+    invoice_items {
+      ...ITEM_FIELDS
+    }
+  }
+}
+    ${Address_FieldsFragmentDoc}
+${Item_FieldsFragmentDoc}`;
+export type UpsertInvoiceMutationFn = Apollo.MutationFunction<UpsertInvoiceMutation, UpsertInvoiceMutationVariables>;
 
+/**
+ * __useUpsertInvoiceMutation__
+ *
+ * To run a mutation, you first call `useUpsertInvoiceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpsertInvoiceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [upsertInvoiceMutation, { data, loading, error }] = useUpsertInvoiceMutation({
+ *   variables: {
+ *      object: // value for 'object'
+ *      on_conflict: // value for 'on_conflict'
+ *   },
+ * });
+ */
+export function useUpsertInvoiceMutation(baseOptions?: Apollo.MutationHookOptions<UpsertInvoiceMutation, UpsertInvoiceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpsertInvoiceMutation, UpsertInvoiceMutationVariables>(UpsertInvoiceDocument, options);
+      }
+export type UpsertInvoiceMutationHookResult = ReturnType<typeof useUpsertInvoiceMutation>;
+export type UpsertInvoiceMutationResult = Apollo.MutationResult<UpsertInvoiceMutation>;
+export type UpsertInvoiceMutationOptions = Apollo.BaseMutationOptions<UpsertInvoiceMutation, UpsertInvoiceMutationVariables>;
 export const AllInvoicesDocument = gql`
     query AllInvoices {
   invoice {
     id
     client_name
     client_email
+    invoice_date
     client_address {
-      id
-      street_address
-      city
-      post_code
-      country
+      ...ADDRESS_FIELDS
     }
     bill_from {
-      id
-      street_address
-      city
-      post_code
-      country
+      ...ADDRESS_FIELDS
     }
-    invoice_date
     invoice_items {
-      id
-      name
-      quantity
-      price
+      ...ITEM_FIELDS
     }
   }
 }
-    `;
+    ${Address_FieldsFragmentDoc}
+${Item_FieldsFragmentDoc}`;
 
 /**
  * __useAllInvoicesQuery__

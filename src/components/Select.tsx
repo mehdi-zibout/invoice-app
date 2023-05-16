@@ -34,7 +34,7 @@ export function MySelect<T extends object>({
       </Label>
       <Button
         className={({ isHovered, isFocused, isFocusVisible, isPressed }) => `
-      flex items-center justify-between w-64 px-5 py-3 outline-none dark:bg-purple-600 bg-white  border rounded-[4px] ${
+      flex items-center justify-between w-full px-5 py-3 outline-none dark:bg-purple-600 bg-white  border rounded-[4px] ${
         isHovered || isFocused || isFocusVisible || isPressed || isOpen
           ? "border-purple-400 dark:border-purple-500"
           : "border-gray-200 dark:border-purple-500"

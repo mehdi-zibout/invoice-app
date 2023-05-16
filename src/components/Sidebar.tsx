@@ -7,8 +7,8 @@ import { Button as AriaButton } from "react-aria-components";
 export default function Sidebar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   return (
-    <div className="bg-[#373B53] w-screen h-[72px] lg:h-screen lg:w-[103px] fixed lg:left-0 top-0 flex justify-between items-center lg:flex-col">
-      <Logo className="lg:w-[103px] lg:h-[103px]" />
+    <div className="bg-[#373B53] w-screen overflow-hidden h-[72px] lg:h-screen lg:w-[103px] fixed lg:left-0 top-0 flex justify-between items-center lg:flex-col lg:rounded-r-3xl z-[999]">
+      <Logo className="lg:w-[110px] lg:h-[110px]" />
       <div className="flex justify-between items-center lg:flex-col">
         <div className="px-6 lg:py-6 h-[72px] lg:w-[103px] lg:h-auto flex items-center justify-center border-r lg:border-b lg:border-r-0 border-[#494E6E] ">
           <AriaButton

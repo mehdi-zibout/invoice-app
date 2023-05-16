@@ -1,0 +1,6 @@
+fragment ITEM_FIELDS on item {
+  id
+  name
+  quantity
+  price
+}

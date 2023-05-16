@@ -1,8 +1,11 @@
 # import { ADDRESS_FIELDS } from "../fragments/address"
 # import { ITEM_FIELDS } from "../fragments/item"
 
-query AllInvoices {
-  invoice {
+mutation UpsertInvoice(
+  $object: invoice_insert_input!
+  $on_conflict: invoice_on_conflict
+) {
+  insert_invoice_one(object: $object, on_conflict: $on_conflict) {
     id
     client_name
     client_email

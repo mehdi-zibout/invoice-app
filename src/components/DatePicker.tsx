@@ -15,18 +15,35 @@ import {
 } from "react-aria-components";
 
 import React from "react";
-export default function DatePicker(
-  props: React.ComponentProps<typeof AriaDatePicker>
-) {
+
+interface DatePickerProps extends React.ComponentProps<typeof AriaDatePicker> {
+  label: string;
+  error?: string;
+}
+export default function DatePicker({
+  label,
+  error,
+  ...props
+}: DatePickerProps) {
   return (
     <AriaDatePicker {...props}>
-      <Label className="text-bodyv text-purple-200 dark:text-gray-200 mb-2">
-        Date
-      </Label>
+      <div className="flex justify-between items-center ">
+        <Label
+          className={`text-bodyv mb-2 ${
+            error ? "text-red-200" : "text-purple-200 dark:text-gray-200 "
+          }
+      `}
+        >
+          {label}
+        </Label>
+        <p className="text-bodyv text-red-200 text-[10px]">{error}</p>
+      </div>
       <Group
         className={({ isHovered, isFocusVisible }) => `
-       flex items-center justify-between w-64 px-5 py-3 outline-none  border rounded-[4px] bg-white dark:bg-purple-600 ${
-         isHovered || isFocusVisible
+       flex items-center justify-between w-full px-5 py-3 outline-none  border rounded-[4px] bg-white dark:bg-purple-600 ${
+         error
+           ? "border-red-200"
+           : isHovered || isFocusVisible
            ? "border-purple-400 dark:border-purple-500"
            : "border-gray-200 dark:border-purple-500"
        } 

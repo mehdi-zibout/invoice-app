@@ -5,14 +5,11 @@ import {
   Dialog,
   DialogTrigger,
   Item,
-  Label,
   ListBox,
   Modal,
   Popover,
-  Select,
-  SelectValue,
-  ToggleButton,
 } from "react-aria-components";
+import UpsertInvoice from "../UpsertInvoice";
 export default function Topbar() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -187,12 +184,39 @@ export default function Topbar() {
             </div>
             New
           </Button>
-          <Modal
-            isDismissable
-            className="bg-white md:rounded-r-[20px]  w-screen h-screen overflow-y-auto  absolute left-0 top-0 md:w-[615px] xl:w-[719px] mt-[72px] lg:mt-0 lg:ml-[103px]"
-          >
-            <Dialog className="outline-none " role="dialog">
-              {({ close }) => <>TODO</>}
+          <Modal className="w-screen  bg-black bg-opacity-50 absolute inset-0">
+            <Dialog
+              className="outline-none  overflow-hidden bg-white md:rounded-r-[20px] h-screen  w-screen absolute left-0 top-0 md:w-[615px] xl:w-[719px] pt-[72px] lg:pt-0 lg:pl-[103px]"
+              role="dialog"
+            >
+              {({ close }) => (
+                <div className="relative h-full">
+                  <UpsertInvoice />
+                  <div
+                    className="w-full  h-48 absolute bottom-12 "
+                    style={{
+                      background: `linear-gradient(180deg, rgba(0, 0, 0,
+                    0.0001) 0%, rgba(0, 0, 0, 0.1) 100%)`,
+                    }}
+                  ></div>
+                  <div className="absolute bottom-0 h-[105px] z-20 flex justify-between items-center w-full  rounded-t-[20px] py-8 px-14 bg-white">
+                    <Button variant="secondary" onPress={() => close()}>
+                      Discard
+                    </Button>
+                    <div className="space-x-2">
+                      <Button variant="tertiary">Save as Draft</Button>
+
+                      <button
+                        type="submit"
+                        form="invoice-form"
+                        className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300"
+                      >
+                        Save & Send
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Dialog>
           </Modal>
         </DialogTrigger>

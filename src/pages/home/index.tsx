@@ -1,5 +1,6 @@
 /// <reference types="vite-plugin-svgr/client" />
 import { ReactComponent as NoInvoices } from "../../assets/no-invoices.svg";
+import Input from "../../components/Input";
 import Sidebar from "../../components/Sidebar";
 import { useAllInvoicesQuery } from "../../generated/graphql";
 import Topbar from "./components/topbar";
