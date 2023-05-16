@@ -13,7 +13,9 @@ import { getLocalTimeZone } from "@internationalized/date";
 import Button from "../../components/Button";
 import {
   Invoice_Constraint,
+  Invoice_FieldsFragmentDoc,
   Invoice_Status_Enum,
+  InvoicesDocument,
   Payment_Terms_Enum,
   useUpsertInvoiceMutation,
 } from "../../generated/graphql";
@@ -55,7 +57,19 @@ const PAYMENT_TERMS = [
 ];
 
 export default function CreateEditInvoice() {
-  const [upsertInvoice] = useUpsertInvoiceMutation();
+  const [upsertInvoice] = useUpsertInvoiceMutation({
+    update: (cache, { data }) => {
+      const newInvoiceRef = cache.writeFragment({
+        data: data?.insert_invoice_one,
+        fragment: Invoice_FieldsFragmentDoc,
+        fragmentName: "INVOICE_FIELDS",
+      });
+      const query = cache.readQuery({
+        query: InvoicesDocument,
+      });
+      console.log(query);
+    },
+  });
   const {
     control,
     register,

@@ -1,23 +1,10 @@
-# import { ADDRESS_FIELDS } from "../fragments/address"
-# import { ITEM_FIELDS } from "../fragments/item"
+# import { INVOICE_FIELDS } from "../fragments/invoice"
 
 mutation UpsertInvoice(
   $object: invoice_insert_input!
   $on_conflict: invoice_on_conflict
 ) {
   insert_invoice_one(object: $object, on_conflict: $on_conflict) {
-    id
-    client_name
-    client_email
-    invoice_date
-    client_address {
-      ...ADDRESS_FIELDS
-    }
-    bill_from {
-      ...ADDRESS_FIELDS
-    }
-    invoice_items {
-      ...ITEM_FIELDS
-    }
+    ...INVOICE_FIELDS
   }
 }

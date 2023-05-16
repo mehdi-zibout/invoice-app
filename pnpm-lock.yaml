@@ -25,6 +25,9 @@ dependencies:
   '@internationalized/date':
     specifier: ^3.2.0
     version: 3.2.0
+  '@internationalized/number':
+    specifier: ^3.2.0
+    version: 3.2.0
   graphql:
     specifier: ^16.6.0
     version: 16.6.0

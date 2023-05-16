@@ -69,12 +69,12 @@ export type String_Comparison_Exp = {
 /** The address of a person (country, city, post code, street address) */
 export type Address = {
   __typename?: 'address';
-  city: Scalars['String'];
-  country: Scalars['String'];
+  city?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
-  post_code: Scalars['String'];
-  street_address: Scalars['String'];
+  post_code?: Maybe<Scalars['String']>;
+  street_address?: Maybe<Scalars['String']>;
   updated_at: Scalars['timestamptz'];
 };
 
@@ -298,7 +298,7 @@ export type Invoice = {
   client_address?: Maybe<Address>;
   client_address_id: Scalars['uuid'];
   client_email: Scalars['String'];
-  client_name: Scalars['String'];
+  client_name?: Maybe<Scalars['String']>;
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
   invoice_date: Scalars['date'];
@@ -1926,7 +1926,9 @@ export type Uuid_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['uuid']>>;
 };
 
-export type Address_FieldsFragment = { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string };
+export type Address_FieldsFragment = { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null };
+
+export type Invoice_FieldsFragment = { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> };
 
 export type Item_FieldsFragment = { __typename?: 'item', id: any, name: string, quantity: any, price: any };
 
@@ -1936,12 +1938,18 @@ export type UpsertInvoiceMutationVariables = Exact<{
 }>;
 
 
-export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name: string, client_email: string, invoice_date: any, client_address?: { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string } | null, bill_from: { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> } | null };
+export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> } | null };
 
-export type AllInvoicesQueryVariables = Exact<{ [key: string]: never; }>;
+export type InvoicesQueryVariables = Exact<{
+  where?: InputMaybe<Invoice_Bool_Exp>;
+  order_by?: InputMaybe<Array<Invoice_Order_By> | Invoice_Order_By>;
+  offset?: InputMaybe<Scalars['Int']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  distinct_on?: InputMaybe<Array<Invoice_Select_Column> | Invoice_Select_Column>;
+}>;
 
 
-export type AllInvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name: string, client_email: string, invoice_date: any, client_address?: { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string } | null, bill_from: { __typename?: 'address', id: any, street_address: string, city: string, post_code: string, country: string }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> }> };
+export type InvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> }> };
 
 export const Address_FieldsFragmentDoc = gql`
     fragment ADDRESS_FIELDS on address {
@@ -1960,6 +1968,25 @@ export const Item_FieldsFragmentDoc = gql`
   price
 }
     `;
+export const Invoice_FieldsFragmentDoc = gql`
+    fragment INVOICE_FIELDS on invoice {
+  id
+  client_name
+  client_email
+  invoice_date
+  status
+  client_address {
+    ...ADDRESS_FIELDS
+  }
+  bill_from {
+    ...ADDRESS_FIELDS
+  }
+  invoice_items {
+    ...ITEM_FIELDS
+  }
+}
+    ${Address_FieldsFragmentDoc}
+${Item_FieldsFragmentDoc}`;
 export const UpsertInvoiceDocument = gql`
     mutation UpsertInvoice($object: invoice_insert_input!, $on_conflict: invoice_on_conflict) {
   insert_invoice_one(object: $object, on_conflict: $on_conflict) {
@@ -1967,6 +1994,7 @@ export const UpsertInvoiceDocument = gql`
     client_name
     client_email
     invoice_date
+    status
     client_address {
       ...ADDRESS_FIELDS
     }
@@ -2007,13 +2035,20 @@ export function useUpsertInvoiceMutation(baseOptions?: Apollo.MutationHookOption
 export type UpsertInvoiceMutationHookResult = ReturnType<typeof useUpsertInvoiceMutation>;
 export type UpsertInvoiceMutationResult = Apollo.MutationResult<UpsertInvoiceMutation>;
 export type UpsertInvoiceMutationOptions = Apollo.BaseMutationOptions<UpsertInvoiceMutation, UpsertInvoiceMutationVariables>;
-export const AllInvoicesDocument = gql`
-    query AllInvoices {
-  invoice {
+export const InvoicesDocument = gql`
+    query Invoices($where: invoice_bool_exp, $order_by: [invoice_order_by!], $offset: Int, $limit: Int, $distinct_on: [invoice_select_column!]) {
+  invoice(
+    distinct_on: $distinct_on
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+    where: $where
+  ) {
     id
     client_name
     client_email
     invoice_date
+    status
     client_address {
       ...ADDRESS_FIELDS
     }
@@ -2029,28 +2064,33 @@ export const AllInvoicesDocument = gql`
 ${Item_FieldsFragmentDoc}`;
 
 /**
- * __useAllInvoicesQuery__
+ * __useInvoicesQuery__
  *
- * To run a query within a React component, call `useAllInvoicesQuery` and pass it any options that fit your needs.
- * When your component renders, `useAllInvoicesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useInvoicesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInvoicesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useAllInvoicesQuery({
+ * const { data, loading, error } = useInvoicesQuery({
  *   variables: {
+ *      where: // value for 'where'
+ *      order_by: // value for 'order_by'
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
+ *      distinct_on: // value for 'distinct_on'
  *   },
  * });
  */
-export function useAllInvoicesQuery(baseOptions?: Apollo.QueryHookOptions<AllInvoicesQuery, AllInvoicesQueryVariables>) {
+export function useInvoicesQuery(baseOptions?: Apollo.QueryHookOptions<InvoicesQuery, InvoicesQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<AllInvoicesQuery, AllInvoicesQueryVariables>(AllInvoicesDocument, options);
+        return Apollo.useQuery<InvoicesQuery, InvoicesQueryVariables>(InvoicesDocument, options);
       }
-export function useAllInvoicesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllInvoicesQuery, AllInvoicesQueryVariables>) {
+export function useInvoicesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InvoicesQuery, InvoicesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<AllInvoicesQuery, AllInvoicesQueryVariables>(AllInvoicesDocument, options);
+          return Apollo.useLazyQuery<InvoicesQuery, InvoicesQueryVariables>(InvoicesDocument, options);
         }
-export type AllInvoicesQueryHookResult = ReturnType<typeof useAllInvoicesQuery>;
-export type AllInvoicesLazyQueryHookResult = ReturnType<typeof useAllInvoicesLazyQuery>;
-export type AllInvoicesQueryResult = Apollo.QueryResult<AllInvoicesQuery, AllInvoicesQueryVariables>;
+export type InvoicesQueryHookResult = ReturnType<typeof useInvoicesQuery>;
+export type InvoicesLazyQueryHookResult = ReturnType<typeof useInvoicesLazyQuery>;
+export type InvoicesQueryResult = Apollo.QueryResult<InvoicesQuery, InvoicesQueryVariables>;

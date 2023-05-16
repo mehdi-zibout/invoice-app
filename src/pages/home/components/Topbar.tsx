@@ -8,9 +8,16 @@ import {
   ListBox,
   Modal,
   Popover,
+  type Selection,
 } from "react-aria-components";
 import UpsertInvoice from "../UpsertInvoice";
-export default function Topbar() {
+import { Invoice_Status_Enum } from "../../../generated/graphql";
+
+type TopBarProps = {
+  filterBy: Selection;
+  setFilterBy: React.Dispatch<React.SetStateAction<Selection>>;
+};
+export default function Topbar({ filterBy, setFilterBy }: TopBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <section className="flex items-center justify-between">
@@ -44,118 +51,54 @@ export default function Topbar() {
           </AriaButton>
           <Popover>
             <ListBox
+              items={[
+                { id: Invoice_Status_Enum.Draft, label: "Draft" },
+                { id: Invoice_Status_Enum.Pending, label: "Pending" },
+                { id: Invoice_Status_Enum.Paid, label: "Paid" },
+              ]}
+              onSelectionChange={setFilterBy}
+              defaultSelectedKeys={filterBy}
               aria-label="filter invoices"
               selectionMode="multiple"
               className="bg-white py-1.5 rounded-lg shadow-popover dark:bg-purple-500 w-48 outline-none"
             >
-              <Item
-                aria-label="draft"
-                textValue="DRAFT"
-                className={`px-6 py-1.5 dark:text-white text-purple-800 outline-none`}
-              >
-                {({ isSelected, isHovered, isFocused }) => (
-                  <div className="gap-x-3 flex items-center justify-start">
-                    <div
-                      className={` w-4 h-4 transition duration-300 rounded-sm border ${
-                        isHovered || isFocused
-                          ? "border-purple-400"
-                          : "border-gray-200"
-                      } flex items-center justify-center
+              {(item) => (
+                <Item
+                  textValue={item.label}
+                  className={`px-6 py-1.5 dark:text-white text-purple-800 outline-none`}
+                >
+                  {({ isSelected, isHovered, isFocused }) => (
+                    <div className="gap-x-3 flex items-center justify-start">
+                      <div
+                        className={` w-4 h-4 transition duration-300 rounded-sm border ${
+                          isHovered || isFocused
+                            ? "border-purple-400"
+                            : "border-gray-200"
+                        } flex items-center justify-center
                     ${isSelected ? "bg-purple-400" : "bg-gray-200 "}
                     `}
-                    >
-                      {isSelected && (
-                        <svg
-                          width="10"
-                          height="9"
-                          viewBox="0 0 10 9"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832"
-                            stroke="white"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      )}
+                      >
+                        {isSelected && (
+                          <svg
+                            width="10"
+                            height="9"
+                            viewBox="0 0 10 9"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832"
+                              stroke="white"
+                              strokeWidth="2"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      {item.label}
                     </div>
-                    Draft
-                  </div>
-                )}
-              </Item>
-              <Item
-                aria-label="pending"
-                textValue="PENDING"
-                className={`px-6 py-1.5 dark:text-white text-purple-800 outline-none`}
-              >
-                {({ isSelected, isHovered, isFocused }) => (
-                  <div className="gap-x-3 flex items-center justify-start">
-                    <div
-                      className={` w-4 h-4 transition duration-300 rounded-sm border ${
-                        isHovered || isFocused
-                          ? "border-purple-400"
-                          : "border-gray-200"
-                      } flex items-center justify-center
-                    ${isSelected ? "bg-purple-400" : "bg-gray-200 "}
-                    `}
-                    >
-                      {isSelected && (
-                        <svg
-                          width="10"
-                          height="9"
-                          viewBox="0 0 10 9"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832"
-                            stroke="white"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                    Pending
-                  </div>
-                )}
-              </Item>
-              <Item
-                textValue="PAID"
-                aria-label="paid"
-                className={`px-6 py-1.5 dark:text-white text-purple-800 outline-none`}
-              >
-                {({ isSelected, isHovered, isFocused }) => (
-                  <div className="gap-x-3 flex items-center justify-start">
-                    <div
-                      className={` w-4 h-4 transition duration-300 rounded-sm border ${
-                        isHovered || isFocused
-                          ? "border-purple-400"
-                          : "border-gray-200"
-                      } flex items-center justify-center
-                    ${isSelected ? "bg-purple-400" : "bg-gray-200 "}
-                    `}
-                    >
-                      {isSelected && (
-                        <svg
-                          width="10"
-                          height="9"
-                          viewBox="0 0 10 9"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1.5 4.49976L3.62425 6.62402L8.96995 1.27832"
-                            stroke="white"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                    Paid
-                  </div>
-                )}
-              </Item>
+                  )}
+                </Item>
+              )}
             </ListBox>
           </Popover>
         </DialogTrigger>

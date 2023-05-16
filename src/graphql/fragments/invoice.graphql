@@ -1,0 +1,19 @@
+# import { ADDRESS_FIELDS } from "./address"
+# import { ITEM_FIELDS } from "./item"
+
+fragment INVOICE_FIELDS on invoice {
+  id
+  client_name
+  client_email
+  invoice_date
+  status
+  client_address {
+    ...ADDRESS_FIELDS
+  }
+  bill_from {
+    ...ADDRESS_FIELDS
+  }
+  invoice_items {
+    ...ITEM_FIELDS
+  }
+}
