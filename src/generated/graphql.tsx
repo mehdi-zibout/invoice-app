@@ -1951,6 +1951,17 @@ export type InvoicesQueryVariables = Exact<{
 
 export type InvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> }> };
 
+export type InvoicesTotalQueryVariables = Exact<{
+  distinct_on?: InputMaybe<Array<Invoice_Select_Column> | Invoice_Select_Column>;
+  offset?: InputMaybe<Scalars['Int']>;
+  order_by?: InputMaybe<Array<Invoice_Order_By> | Invoice_Order_By>;
+  where?: InputMaybe<Invoice_Bool_Exp>;
+  limit?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type InvoicesTotalQuery = { __typename?: 'query_root', invoice_aggregate: { __typename?: 'invoice_aggregate', aggregate?: { __typename?: 'invoice_aggregate_fields', count: number } | null } };
+
 export const Address_FieldsFragmentDoc = gql`
     fragment ADDRESS_FIELDS on address {
   id
@@ -1990,24 +2001,10 @@ ${Item_FieldsFragmentDoc}`;
 export const UpsertInvoiceDocument = gql`
     mutation UpsertInvoice($object: invoice_insert_input!, $on_conflict: invoice_on_conflict) {
   insert_invoice_one(object: $object, on_conflict: $on_conflict) {
-    id
-    client_name
-    client_email
-    invoice_date
-    status
-    client_address {
-      ...ADDRESS_FIELDS
-    }
-    bill_from {
-      ...ADDRESS_FIELDS
-    }
-    invoice_items {
-      ...ITEM_FIELDS
-    }
+    ...INVOICE_FIELDS
   }
 }
-    ${Address_FieldsFragmentDoc}
-${Item_FieldsFragmentDoc}`;
+    ${Invoice_FieldsFragmentDoc}`;
 export type UpsertInvoiceMutationFn = Apollo.MutationFunction<UpsertInvoiceMutation, UpsertInvoiceMutationVariables>;
 
 /**
@@ -2094,3 +2091,50 @@ export function useInvoicesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<I
 export type InvoicesQueryHookResult = ReturnType<typeof useInvoicesQuery>;
 export type InvoicesLazyQueryHookResult = ReturnType<typeof useInvoicesLazyQuery>;
 export type InvoicesQueryResult = Apollo.QueryResult<InvoicesQuery, InvoicesQueryVariables>;
+export const InvoicesTotalDocument = gql`
+    query InvoicesTotal($distinct_on: [invoice_select_column!], $offset: Int, $order_by: [invoice_order_by!], $where: invoice_bool_exp, $limit: Int) {
+  invoice_aggregate(
+    distinct_on: $distinct_on
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+    where: $where
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+    `;
+
+/**
+ * __useInvoicesTotalQuery__
+ *
+ * To run a query within a React component, call `useInvoicesTotalQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInvoicesTotalQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useInvoicesTotalQuery({
+ *   variables: {
+ *      distinct_on: // value for 'distinct_on'
+ *      offset: // value for 'offset'
+ *      order_by: // value for 'order_by'
+ *      where: // value for 'where'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useInvoicesTotalQuery(baseOptions?: Apollo.QueryHookOptions<InvoicesTotalQuery, InvoicesTotalQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<InvoicesTotalQuery, InvoicesTotalQueryVariables>(InvoicesTotalDocument, options);
+      }
+export function useInvoicesTotalLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InvoicesTotalQuery, InvoicesTotalQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<InvoicesTotalQuery, InvoicesTotalQueryVariables>(InvoicesTotalDocument, options);
+        }
+export type InvoicesTotalQueryHookResult = ReturnType<typeof useInvoicesTotalQuery>;
+export type InvoicesTotalLazyQueryHookResult = ReturnType<typeof useInvoicesTotalLazyQuery>;
+export type InvoicesTotalQueryResult = Apollo.QueryResult<InvoicesTotalQuery, InvoicesTotalQueryVariables>;

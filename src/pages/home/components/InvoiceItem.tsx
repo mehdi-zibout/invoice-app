@@ -105,3 +105,12 @@ function getStatusLabel(status: Invoice_Status_Enum): string {
       return "Pending";
   }
 }
+
+export function InvoiceItemLoading() {
+  return (
+    <div
+      style={{ boxShadow: "0px 10px 10px -10px #48549F1A" }}
+      className="bg-white h-[74px] dark:bg-purple-600 rounded-lg animate-pulse"
+    ></div>
+  );
+}

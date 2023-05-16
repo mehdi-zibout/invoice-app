@@ -11,7 +11,11 @@ import {
   type Selection,
 } from "react-aria-components";
 import UpsertInvoice from "../UpsertInvoice";
-import { Invoice_Status_Enum } from "../../../generated/graphql";
+import {
+  Invoice_Status_Enum,
+  useInvoicesTotalQuery,
+} from "../../../generated/graphql";
+import { ApolloError } from "@apollo/client";
 
 type TopBarProps = {
   filterBy: Selection;
@@ -19,13 +23,27 @@ type TopBarProps = {
 };
 export default function Topbar({ filterBy, setFilterBy }: TopBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { data, loading, error } = useInvoicesTotalQuery({
+    variables: {
+      where: {
+        status: { _in: Array.from(filterBy) as Invoice_Status_Enum[] },
+      },
+    },
+  });
   return (
     <section className="flex items-center justify-between">
       <div className="">
         <h1 className="text-purple-800 mb-[3px] md:mb-1.5 text-hm dark:text-white ">
           Invoices
         </h1>
-        <p className="text-purple-100 text-bodyv">No invoices</p>
+        <p className="text-purple-100 text-bodyv">
+          {generateInvoicesCountMessage(
+            data?.invoice_aggregate.aggregate?.count,
+            loading,
+            error,
+            Array.from(filterBy) as Invoice_Status_Enum[]
+          )}
+        </p>
       </div>
       <div className="flex items-center gap-x-4">
         <DialogTrigger onOpenChange={(isOpen) => setIsOpen(isOpen)}>
@@ -128,9 +146,9 @@ export default function Topbar({ filterBy, setFilterBy }: TopBarProps) {
             New
             <span className="hidden md:inline-block ml-1">Invoice</span>
           </Button>
-          <Modal className="w-screen  bg-black bg-opacity-50 absolute inset-0">
+          <Modal className="w-screen animate-in fade-in  duration-500 bg-black bg-opacity-50 fixed inset-0">
             <Dialog
-              className="outline-none  overflow-hidden bg-white md:rounded-r-[20px] h-screen  w-screen absolute left-0 top-0 md:w-[615px] xl:w-[719px] pt-[72px] lg:pt-0 lg:pl-[103px]"
+              className="animate-in slide-in-from-left   duration-500 outline-none  overflow-hidden bg-white md:rounded-r-[20px] h-screen  w-screen absolute left-0 top-0 md:w-[615px] xl:w-[719px] pt-[72px] lg:pt-0 lg:pl-[103px]"
               role="dialog"
             >
               {({ close }) => (
@@ -167,4 +185,31 @@ export default function Topbar({ filterBy, setFilterBy }: TopBarProps) {
       </div>
     </section>
   );
+}
+
+function generateInvoicesCountMessage(
+  count: number | undefined,
+  loading: boolean,
+  error: ApolloError | undefined,
+  statuses: Invoice_Status_Enum[]
+): string {
+  if (loading) return "Calculating number of invoices..";
+  if (error)
+    return "Failed to calculate number of invoices, please try again later.";
+  if (statuses.length === 0) return "Please pick a status";
+  if (statuses.length === 1) {
+    if (statuses[0] === Invoice_Status_Enum.Draft) {
+      return `There are ${count} draft invoices`;
+    }
+    if (statuses[0] === Invoice_Status_Enum.Paid) {
+      return `There are ${count} paid invoices`;
+    }
+    if (statuses[0] === Invoice_Status_Enum.Pending) {
+      return `There are ${count} pending invoices`;
+    }
+  }
+  if (statuses.length === 2) {
+    return `There are ${count}  invoices`;
+  }
+  return `There are ${count} total  invoices`;
 }
