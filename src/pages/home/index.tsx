@@ -1,9 +1,12 @@
 /// <reference types="vite-plugin-svgr/client" />
 import { ReactComponent as NoInvoices } from "../../assets/no-invoices.svg";
-import Input from "../../components/Input";
 import Sidebar from "../../components/Sidebar";
-import { useAllInvoicesQuery } from "../../generated/graphql";
-import Topbar from "./components/topbar";
+import {
+  Invoice_Status_Enum,
+  useAllInvoicesQuery,
+} from "../../generated/graphql";
+import InvoiceItem from "./components/InvoiceItem";
+import Topbar from "./components/Topbar";
 
 function Homepage() {
   const { data } = useAllInvoicesQuery();
@@ -24,7 +27,31 @@ function Homepage() {
                 Create an invoice by clicking the New button and get started
               </p>
             </div>
-          ) : null}
+          ) : (
+            <div className="space-y-4 mt-6">
+              <InvoiceItem
+                id="RT3080"
+                dueDate="19 Aug 2021"
+                clientName="Jensen Huang"
+                amount="£ 1,800.90"
+                status={Invoice_Status_Enum.Paid}
+              />
+              <InvoiceItem
+                id="XM9141"
+                dueDate="20 Sep 2021"
+                clientName="Alex Grim"
+                amount="£ 556.00"
+                status={Invoice_Status_Enum.Pending}
+              />
+              <InvoiceItem
+                id="FV2353"
+                dueDate="12 Nov 2021"
+                clientName="Anita Wainwright"
+                amount="£ 3,102.04"
+                status={Invoice_Status_Enum.Draft}
+              />
+            </div>
+          )}
         </div>
       </main>
     </div>

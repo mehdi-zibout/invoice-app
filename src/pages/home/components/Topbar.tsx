@@ -166,10 +166,10 @@ export default function Topbar() {
           >
             <div
               aria-hidden="true"
-              className="rounded-full mr-2  flex justify-center items-center w-8 h-8 bg-white text-purple-400"
+              className="rounded-full mr-2 lg:mr-4  flex justify-center items-center w-8 h-8 bg-white text-purple-400"
             >
               <svg
-                className="ml-0.5"
+                className="ml-0.5 "
                 width="11"
                 height="11"
                 viewBox="0 0 11 11"
@@ -183,6 +183,7 @@ export default function Topbar() {
               </svg>
             </div>
             New
+            <span className="hidden md:inline-block ml-1">Invoice</span>
           </Button>
           <Modal className="w-screen  bg-black bg-opacity-50 absolute inset-0">
             <Dialog
