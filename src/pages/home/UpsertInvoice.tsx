@@ -28,7 +28,7 @@ import {
   useUpsertInvoiceMutation,
 } from "../../generated/graphql";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const paymentTermsSchema = z.nativeEnum(Payment_Terms_Enum);
 
@@ -73,14 +73,16 @@ const PAYMENT_TERMS = [
 
 export default function CreateEditInvoice({
   editInvoice,
+  setLoading,
   close,
 }: {
   editInvoice?: InvoiceType & { id: string };
   close: () => void;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const navigate = useNavigate();
   const [deletedItemsId, setDeletedItemsId] = useState<string[]>([]);
-  const [deleteItem] = useDeleteItemMutation({
+  const [deleteItem, { loading: deleteLoading }] = useDeleteItemMutation({
     update: (cache, { data: deletedItems }) => {
       cache.updateQuery(
         {
@@ -105,7 +107,7 @@ export default function CreateEditInvoice({
       );
     },
   });
-  const [upsertInvoice] = useUpsertInvoiceMutation({
+  const [upsertInvoice, { loading: upsertLoading }] = useUpsertInvoiceMutation({
     refetchQueries: [InvoicesDocument, InvoicesTotalDocument],
     onCompleted: (data) => {
       if (!editInvoice) navigate(`/invoice/${data.insert_invoice_one?.id}`);
@@ -215,10 +217,21 @@ export default function CreateEditInvoice({
     name: "items",
   });
 
+  useEffect(() => {
+    setLoading(deleteLoading || upsertLoading);
+  }, [upsertLoading, deleteLoading, setLoading]);
+
   return (
     <div className="py-14 pl-14 pr-6 relative z-10 ">
       <h2 className="text-hm text-purple-800 dark:text-white mb-11">
-        New Invoice
+        {editInvoice ? (
+          <>
+            Edit <span className="text-purple-100">#</span>
+            {editInvoice.id.slice(0, 6).toUpperCase()}
+          </>
+        ) : (
+          "New Invoice"
+        )}
       </h2>
       <form
         onSubmit={handleSubmit(onSubmit)}

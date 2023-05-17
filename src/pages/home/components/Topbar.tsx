@@ -32,6 +32,7 @@ export default function Topbar({
   error,
 }: TopBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [insertLoading, setInsertLoading] = useState(false);
 
   return (
     <section className="flex items-center justify-between">
@@ -156,7 +157,7 @@ export default function Topbar({
             >
               {({ close }) => (
                 <div className="relative h-full">
-                  <UpsertInvoice close={close} />
+                  <UpsertInvoice setLoading={setInsertLoading} close={close} />
                   <div
                     className="w-full  h-48 absolute bottom-12 "
                     style={{
@@ -169,14 +170,23 @@ export default function Topbar({
                       Discard
                     </Button>
                     <div className="space-x-2">
-                      <button type="submit" form="draft-form">
+                      <button
+                        disabled={insertLoading}
+                        className="
+                        text-purple-100 bg-[#373B53] dark:text-gray-200 dark:bg-[#373B53]
+                      hover:text-purple-100 hover:bg-purple-800 hover:dark:text-gray-200 hover:dark:bg-purple-600
+                        px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                        type="submit"
+                        form="draft-form"
+                      >
                         Save as Draft
                       </button>
 
                       <button
+                        disabled={insertLoading}
                         type="submit"
                         form="invoice-form"
-                        className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300"
+                        className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Save & Send
                       </button>

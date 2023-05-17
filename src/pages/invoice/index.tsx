@@ -2,6 +2,7 @@ import {
   Button as AriaButton,
   Dialog,
   DialogTrigger,
+  Heading,
   Modal,
 } from "react-aria-components";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,7 +10,10 @@ import Card from "../../components/Card";
 import InvoiceStatus from "../../components/InvoiceStatus";
 import {
   Invoice_Status_Enum,
+  InvoicesDocument,
+  InvoicesTotalDocument,
   Payment_Terms_Enum,
+  useDeleteInvoiceMutation,
   useInvoiceByIdQuery,
   useMarkAsPaidMutation,
 } from "../../generated/graphql";
@@ -18,6 +22,7 @@ import { ReactComponent as NoInvoices } from "../../assets/no-invoices.svg";
 import { dateFormatter, numberFormatter } from "../../utils/formatters";
 import { getLocalTimeZone, parseDate } from "@internationalized/date";
 import UpsertInvoice from "../home/UpsertInvoice";
+import { useState } from "react";
 
 export default function InvoiceDetails() {
   const { invoiceId } = useParams();
@@ -27,7 +32,15 @@ export default function InvoiceDetails() {
     variables: { id: invoiceId },
   });
   const invoice = data?.invoice_by_pk;
+  const shortId = `${invoice?.id}`.slice(0, 6).toUpperCase();
   const [markAsPaid] = useMarkAsPaidMutation();
+  const [deleteInvoice, { loading: deleteLoading }] = useDeleteInvoiceMutation({
+    refetchQueries: [InvoicesDocument, InvoicesTotalDocument],
+    onCompleted: () => {
+      navigate("/");
+    },
+  });
+  const [editLoading, setEditLoading] = useState(false);
   return (
     <main className="px-6 py-9 md:px-12 md:py-16">
       <AriaButton
@@ -52,7 +65,14 @@ export default function InvoiceDetails() {
       </AriaButton>
 
       {loading ? (
-        "loading ..."
+        <>
+          <Card className="h-20 mb-6 animate-pulse" />
+          <Card className="!p-12 h-[596px]  animate-pulse">
+            <div className="h-[250px] "></div>
+            <div className="bg-[#F9FAFE] dark:bg-purple-500 rounded-t-lg  h-[200px] " />
+            <div className="bg-[#373B53] bg-opacity-25 dark:bg-purple-800 rounded-b-lg h-[75px] "></div>
+          </Card>
+        </>
       ) : error || !invoice ? (
         <div className="flex items-center justify-center flex-col mt-10">
           <NoInvoices className="md:mb-16 mb-10" />
@@ -81,7 +101,11 @@ export default function InvoiceDetails() {
                   >
                     {({ close }) => (
                       <div className="relative h-full">
-                        <UpsertInvoice editInvoice={invoice} close={close} />
+                        <UpsertInvoice
+                          editInvoice={invoice}
+                          close={close}
+                          setLoading={setEditLoading}
+                        />
                         <div
                           className="w-full  h-48 absolute bottom-12 "
                           style={{
@@ -89,17 +113,18 @@ export default function InvoiceDetails() {
                     0.0001) 0%, rgba(0, 0, 0, 0.1) 100%)`,
                           }}
                         ></div>
-                        <div className="absolute bottom-0 h-[105px] z-20 flex justify-between items-center w-full  rounded-t-[20px] py-8 px-14 bg-white">
+                        <div className="absolute bottom-0 h-[105px] z-20 flex justify-end items-center w-full  rounded-t-[20px] py-8 px-14 bg-white">
                           <Button variant="secondary" onPress={() => close()}>
                             Cancel
                           </Button>
 
                           <button
+                            disabled={editLoading}
                             type="submit"
                             form="invoice-form"
                             className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300"
                           >
-                            Save & Send
+                            {editLoading ? `Saving...` : "Save & Send"}
                           </button>
                         </div>
                       </div>
@@ -107,9 +132,43 @@ export default function InvoiceDetails() {
                   </Dialog>
                 </Modal>
               </DialogTrigger>
-              <Button variant="destructive">Delete</Button>
+              <DialogTrigger>
+                <Button variant="destructive">Delete</Button>
+                <Modal className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
+                  <Dialog className="rounded-lg bg-white max-w-md p-12 outline-none">
+                    {({ close }) => (
+                      <>
+                        <Heading className="text-hm text-purple-800 dark:text-white">
+                          Confirm Deletion
+                        </Heading>
+                        <p className="dark:text-gray-200 text-body my-3 text-purple-100">
+                          Are you sure you want to delete invoice #{shortId}?
+                          This action cannot be undone.
+                        </p>
+                        <div className="flex items-center justify-end gap-x-2">
+                          <Button variant="secondary" onPress={close}>
+                            Cancel
+                          </Button>
+                          <Button
+                            isDisabled={deleteLoading}
+                            variant="destructive"
+                            onPress={() => {
+                              deleteInvoice({
+                                variables: {
+                                  id: invoice.id,
+                                },
+                              });
+                            }}
+                          >
+                            {deleteLoading ? "Deleting.." : "Delete"}
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </Dialog>
+                </Modal>
+              </DialogTrigger>
               <Button
-                className={"disabled:bg-opacity-10"}
                 isDisabled={invoice.status === Invoice_Status_Enum.Paid}
                 onPress={() => {
                   markAsPaid({
@@ -134,7 +193,7 @@ export default function InvoiceDetails() {
               <div className="">
                 <h2 className="text-purple-800 uppercase dark:text-white text-hs">
                   <span className="text-purple-100">#</span>
-                  {`${invoice.id}`.slice(0, 6)}
+                  {shortId}
                 </h2>
                 <p className="text-purple-200 dark:text-gray-200 text-body mt-2">
                   {invoice.project_description}

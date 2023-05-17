@@ -1,4 +1,5 @@
 /// <reference types="vite-plugin-svgr/client" />
+import { UserButton } from "@clerk/clerk-react";
 import { ReactComponent as Logo } from "../assets/logo.svg";
 import { ReactComponent as Moon } from "../assets/moon.svg";
 import { useState } from "react";
@@ -26,7 +27,7 @@ export default function Sidebar() {
           </AriaButton>
         </div>
         <div className="px-6 lg:py-6">
-          <img src="/image-avatar.jpg" className="w-8 h-8 rounded-full" />
+          <UserButton />
         </div>
       </div>
     </div>

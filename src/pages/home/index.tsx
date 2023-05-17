@@ -20,7 +20,7 @@ function Homepage() {
       Invoice_Status_Enum.Paid,
     ])
   );
-  const { data, loading, error, fetchMore, networkStatus } = useInvoicesQuery({
+  const { data, error, fetchMore, networkStatus } = useInvoicesQuery({
     variables: {
       where: {
         status: { _in: Array.from(filterBy) as Invoice_Status_Enum[] },
@@ -31,6 +31,7 @@ function Homepage() {
       offset: 0,
       limit: 8,
     },
+
     notifyOnNetworkStatusChange: true,
   });
   const {
@@ -55,8 +56,7 @@ function Homepage() {
       return;
     }
     fetchMore({ variables: { offset: data?.invoice?.length } });
-  }, [data, countData, loading, fetchMore]);
-
+  }, [data, countData, fetchMore]);
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -70,9 +70,8 @@ function Homepage() {
         filterBy={filterBy}
         setFilterBy={setFilterBy}
       />
-      {loading &&
-      (networkStatus === NetworkStatus.setVariables ||
-        networkStatus === NetworkStatus.loading) ? (
+      {networkStatus === NetworkStatus.setVariables ||
+      networkStatus === NetworkStatus.loading ? (
         <div className="space-y-4 mt-6">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
             <InvoiceItemLoading key={x} />

@@ -17,7 +17,9 @@ const Button = forwardRef<HTMLButtonElement, CustomButtonProps>(
           isFocusVisible,
           isPressed,
         }) =>
-          `px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full ${
+          `${
+            isDisabled ? "opacity-50 cursor-not-allowed" : ""
+          } px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full ${
             isFocused || isHovered
               ? getBackgroundColor(variant)[1]
               : getBackgroundColor(variant)[0]
