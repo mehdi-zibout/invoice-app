@@ -14,3 +14,10 @@ export default function getPaymentTermsDays(
       return 7;
   }
 }
+
+export const PAYMENT_TERMS = [
+  { id: Payment_Terms_Enum.Net1, name: "Net 1 Day" },
+  { id: Payment_Terms_Enum.Net7, name: "Net 7 Days" },
+  { id: Payment_Terms_Enum.Net14, name: "Net 14 Days" },
+  { id: Payment_Terms_Enum.Net30, name: "Net 30 Days" },
+];
