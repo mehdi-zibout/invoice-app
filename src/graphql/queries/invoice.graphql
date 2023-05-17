@@ -1,5 +1,4 @@
-# import { ADDRESS_FIELDS } from "../fragments/address"
-# import { ITEM_FIELDS } from "../fragments/item"
+# import { INVOICE_FIELDS } from "../fragments/item"
 
 query Invoices(
   $where: invoice_bool_exp
@@ -15,20 +14,7 @@ query Invoices(
     order_by: $order_by
     where: $where
   ) {
-    id
-    client_name
-    client_email
-    invoice_date
-    status
-    client_address {
-      ...ADDRESS_FIELDS
-    }
-    bill_from {
-      ...ADDRESS_FIELDS
-    }
-    invoice_items {
-      ...ITEM_FIELDS
-    }
+    ...INVOICE_FIELDS
   }
 }
 
@@ -49,5 +35,11 @@ query InvoicesTotal(
     aggregate {
       count
     }
+  }
+}
+
+query InvoiceById($id: uuid!) {
+  invoice_by_pk(id: $id) {
+    ...INVOICE_FIELDS
   }
 }

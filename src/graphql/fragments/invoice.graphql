@@ -7,6 +7,8 @@ fragment INVOICE_FIELDS on invoice {
   client_email
   invoice_date
   status
+  project_description
+  payment_terms
   client_address {
     ...ADDRESS_FIELDS
   }

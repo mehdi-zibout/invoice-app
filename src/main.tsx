@@ -4,6 +4,7 @@ import "./index.css";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes.tsx";
+import { InvoicesDocument } from "./generated/graphql.tsx";
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),

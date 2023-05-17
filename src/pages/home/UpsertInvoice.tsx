@@ -16,6 +16,7 @@ import {
   Invoice_FieldsFragmentDoc,
   Invoice_Status_Enum,
   InvoicesDocument,
+  InvoicesTotalDocument,
   Payment_Terms_Enum,
   useUpsertInvoiceMutation,
 } from "../../generated/graphql";
@@ -59,15 +60,74 @@ const PAYMENT_TERMS = [
 export default function CreateEditInvoice() {
   const [upsertInvoice] = useUpsertInvoiceMutation({
     update: (cache, { data }) => {
-      const newInvoiceRef = cache.writeFragment({
-        data: data?.insert_invoice_one,
-        fragment: Invoice_FieldsFragmentDoc,
-        fragmentName: "INVOICE_FIELDS",
-      });
-      const query = cache.readQuery({
-        query: InvoicesDocument,
-      });
-      console.log(query);
+      try {
+        cache.updateQuery(
+          {
+            query: InvoicesDocument,
+            variables: {
+              where: {
+                status: { _in: ["DRAFT", "PENDING", "PAID"] },
+              },
+            },
+          },
+          ({ invoice }) => ({ invoice: [...invoice, data?.insert_invoice_one] })
+        );
+        cache.updateQuery(
+          {
+            query: InvoicesTotalDocument,
+            variables: {
+              where: {
+                status: { _in: ["DRAFT", "PENDING", "PAID"] },
+              },
+            },
+          },
+          (countData) => ({
+            invoice_aggregate: {
+              aggregate: {
+                count: countData.invoice_aggregate.aggregate.count + 1,
+              },
+            },
+          })
+        );
+        // cache.updateQuery(
+        //   {
+        //     query: InvoicesDocument,
+        //     variables: {
+        //       where: {
+        //         status: { _in: ["DRAFT", "PENDING"] },
+        //       },
+        //     },
+        //   },
+        //   ({ invoice }) => ({ invoice: [...invoice, data?.insert_invoice_one] })
+        // );
+        // cache.updateQuery(
+        //   {
+        //     query: InvoicesDocument,
+        //     variables: {
+        //       where: {
+        //         status: { _in: ["PENDING", "PAID"] },
+        //       },
+        //     },
+        //   },
+        //   ({ invoice }) => ({ invoice: [...invoice, data?.insert_invoice_one] })
+        // );
+        // cache.updateQuery(
+        //   {
+        //     query: InvoicesDocument,
+        //     variables: {
+        //       where: {
+        //         status: { _in: ["PENDING"] },
+        //       },
+        //     },
+        //   },
+        //   ({ invoice }) => ({ invoice: [...invoice, data?.insert_invoice_one] })
+        // );
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    onQueryUpdated(observableQuery) {
+      return observableQuery.refetch();
     },
   });
   const {

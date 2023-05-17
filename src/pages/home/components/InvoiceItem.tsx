@@ -1,17 +1,8 @@
 import { Invoice_Status_Enum } from "../../../generated/graphql";
-import { DateFormatter } from "@internationalized/date";
-import { NumberFormatter } from "@internationalized/number";
-
-const dateFormatter = new DateFormatter("en-UK", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
-
-const numberFormatter = new NumberFormatter("en-UK", {
-  style: "currency",
-  currency: "GBP",
-});
+import InvoiceStatus from "../../../components/InvoiceStatus";
+import Card from "../../../components/Card";
+import { Link } from "react-router-dom";
+import { dateFormatter, numberFormatter } from "../../../utils/formatters";
 
 type InvoiceItemProps = {
   id: string;
@@ -28,14 +19,11 @@ export default function InvoiceItem({
   id,
 }: InvoiceItemProps) {
   return (
-    <div
-      style={{ boxShadow: "0px 10px 10px -10px #48549F1A" }}
-      className="bg-white dark:bg-purple-600 rounded-lg px-8 py-4 grid grid-cols-3 items-center"
-    >
+    <Card className="grid grid-cols-3 items-center">
       <div className="col-span-2 grid grid-cols-5">
         <p className="text-purple-800 text-hsv uppercase">
           <span className="text-purple-200">#</span>
-          {id}
+          {id.slice(0, 6)}
         </p>
         <p className="text-body text-purple-200 col-span-2">
           <span className="text-purple-100 mr-1">Due</span>
@@ -48,7 +36,7 @@ export default function InvoiceItem({
           {numberFormatter.format(amount)}
         </p>
         <InvoiceStatus status={status} className="col-span-3" />
-        <button className="flex justify-end">
+        <Link to={`/${id}`} className="flex justify-end">
           <svg
             aria-hidden="true"
             width="7"
@@ -59,51 +47,10 @@ export default function InvoiceItem({
           >
             <path d="M1 1L5 5L1 9" stroke="#7C5DFA" strokeWidth="2" />
           </svg>
-        </button>
+        </Link>
       </div>
-    </div>
+    </Card>
   );
-}
-function InvoiceStatus({
-  className,
-  status,
-}: {
-  status: Invoice_Status_Enum;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`${className}  ${getStatusStyles(
-        status
-      )} bg-opacity-5 rounded-md  pt-[14px] pb-[11px] flex items-center justify-center `}
-    >
-      <div
-        className={`rounded-full w-2 h-2  ${getStatusStyles(status)} mr-2`}
-      ></div>
-      <p className="text-hsv text-center mt-0.5">{getStatusLabel(status)}</p>
-    </div>
-  );
-}
-
-function getStatusStyles(status: Invoice_Status_Enum): string {
-  switch (status) {
-    case Invoice_Status_Enum.Draft:
-      return "bg-[#373B53] text-[#373B53]";
-    case Invoice_Status_Enum.Paid:
-      return "bg-[#33D69F] text-[#33D69F]";
-    case Invoice_Status_Enum.Pending:
-      return "bg-[#FF8F00] text-[#FF8F00]";
-  }
-}
-function getStatusLabel(status: Invoice_Status_Enum): string {
-  switch (status) {
-    case Invoice_Status_Enum.Draft:
-      return "Draft";
-    case Invoice_Status_Enum.Paid:
-      return "Paid";
-    case Invoice_Status_Enum.Pending:
-      return "Pending";
-  }
 }
 
 export function InvoiceItemLoading() {

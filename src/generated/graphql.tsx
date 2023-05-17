@@ -1928,7 +1928,7 @@ export type Uuid_Comparison_Exp = {
 
 export type Address_FieldsFragment = { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null };
 
-export type Invoice_FieldsFragment = { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> };
+export type Invoice_FieldsFragment = { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, project_description?: string | null, payment_terms: Payment_Terms_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> };
 
 export type Item_FieldsFragment = { __typename?: 'item', id: any, name: string, quantity: any, price: any };
 
@@ -1938,7 +1938,7 @@ export type UpsertInvoiceMutationVariables = Exact<{
 }>;
 
 
-export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> } | null };
+export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, project_description?: string | null, payment_terms: Payment_Terms_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> } | null };
 
 export type InvoicesQueryVariables = Exact<{
   where?: InputMaybe<Invoice_Bool_Exp>;
@@ -1949,7 +1949,7 @@ export type InvoicesQueryVariables = Exact<{
 }>;
 
 
-export type InvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> }> };
+export type InvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, project_description?: string | null, payment_terms: Payment_Terms_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> }> };
 
 export type InvoicesTotalQueryVariables = Exact<{
   distinct_on?: InputMaybe<Array<Invoice_Select_Column> | Invoice_Select_Column>;
@@ -1961,6 +1961,13 @@ export type InvoicesTotalQueryVariables = Exact<{
 
 
 export type InvoicesTotalQuery = { __typename?: 'query_root', invoice_aggregate: { __typename?: 'invoice_aggregate', aggregate?: { __typename?: 'invoice_aggregate_fields', count: number } | null } };
+
+export type InvoiceByIdQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type InvoiceByIdQuery = { __typename?: 'query_root', invoice_by_pk?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, project_description?: string | null, payment_terms: Payment_Terms_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> } | null };
 
 export const Address_FieldsFragmentDoc = gql`
     fragment ADDRESS_FIELDS on address {
@@ -1986,6 +1993,8 @@ export const Invoice_FieldsFragmentDoc = gql`
   client_email
   invoice_date
   status
+  project_description
+  payment_terms
   client_address {
     ...ADDRESS_FIELDS
   }
@@ -2041,24 +2050,10 @@ export const InvoicesDocument = gql`
     order_by: $order_by
     where: $where
   ) {
-    id
-    client_name
-    client_email
-    invoice_date
-    status
-    client_address {
-      ...ADDRESS_FIELDS
-    }
-    bill_from {
-      ...ADDRESS_FIELDS
-    }
-    invoice_items {
-      ...ITEM_FIELDS
-    }
+    ...INVOICE_FIELDS
   }
 }
-    ${Address_FieldsFragmentDoc}
-${Item_FieldsFragmentDoc}`;
+    ${Invoice_FieldsFragmentDoc}`;
 
 /**
  * __useInvoicesQuery__
@@ -2138,3 +2133,38 @@ export function useInvoicesTotalLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type InvoicesTotalQueryHookResult = ReturnType<typeof useInvoicesTotalQuery>;
 export type InvoicesTotalLazyQueryHookResult = ReturnType<typeof useInvoicesTotalLazyQuery>;
 export type InvoicesTotalQueryResult = Apollo.QueryResult<InvoicesTotalQuery, InvoicesTotalQueryVariables>;
+export const InvoiceByIdDocument = gql`
+    query InvoiceById($id: uuid!) {
+  invoice_by_pk(id: $id) {
+    ...INVOICE_FIELDS
+  }
+}
+    ${Invoice_FieldsFragmentDoc}`;
+
+/**
+ * __useInvoiceByIdQuery__
+ *
+ * To run a query within a React component, call `useInvoiceByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInvoiceByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useInvoiceByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useInvoiceByIdQuery(baseOptions: Apollo.QueryHookOptions<InvoiceByIdQuery, InvoiceByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<InvoiceByIdQuery, InvoiceByIdQueryVariables>(InvoiceByIdDocument, options);
+      }
+export function useInvoiceByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InvoiceByIdQuery, InvoiceByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<InvoiceByIdQuery, InvoiceByIdQueryVariables>(InvoiceByIdDocument, options);
+        }
+export type InvoiceByIdQueryHookResult = ReturnType<typeof useInvoiceByIdQuery>;
+export type InvoiceByIdLazyQueryHookResult = ReturnType<typeof useInvoiceByIdLazyQuery>;
+export type InvoiceByIdQueryResult = Apollo.QueryResult<InvoiceByIdQuery, InvoiceByIdQueryVariables>;

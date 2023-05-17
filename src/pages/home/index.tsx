@@ -1,7 +1,6 @@
 /// <reference types="vite-plugin-svgr/client" />
 import { useState } from "react";
 import { ReactComponent as NoInvoices } from "../../assets/no-invoices.svg";
-import Sidebar from "../../components/Sidebar";
 import { Invoice_Status_Enum, useInvoicesQuery } from "../../generated/graphql";
 import InvoiceItem, { InvoiceItemLoading } from "./components/InvoiceItem";
 import Topbar from "./components/Topbar";
@@ -22,49 +21,44 @@ function Homepage() {
       },
     },
   });
-  console.log(data);
+
   return (
-    <div className="">
-      <Sidebar />
-      <main className="md:px-12 md:py-36  lg:w-[100vw-103px] mt-[72px] lg:mt-0 lg:ml-[103px] px-6 py-9">
-        <div className="mx-auto max-w-screen-md  ">
-          <Topbar filterBy={filterBy} setFilterBy={setFilterBy} />
-          {loading ? (
-            <div className="space-y-4 mt-6">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
-                <InvoiceItemLoading key={x} />
-              ))}
-            </div>
-          ) : !data || error ? null : data.invoice.length === 0 ? (
-            <div className="w-full min-h-[calc(100vh-72px-288px)] flex items-center justify-center flex-col ">
-              <NoInvoices className="md:mb-16 mb-10" />
-              <h2 className="dark:text-white text-purple-800 text-hm mb-6">
-                There is nothing here
-              </h2>
-              <p className="text-purple-100 dark:text-gray-200 max-w-[176px] text-center text-bodyv">
-                Create an invoice by clicking the New button and get started
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4 mt-6">
-              {data.invoice.map((invoice) => (
-                <InvoiceItem
-                  key={invoice.id}
-                  id={(invoice.id as string).slice(0, 6)}
-                  dueDate={invoice.invoice_date}
-                  clientName={invoice?.client_name ?? "no client name"}
-                  amount={invoice.invoice_items.reduce(
-                    (p, c) => p + +`${c.price}`.slice(1) * c.quantity,
-                    0
-                  )}
-                  status={invoice.status}
-                />
-              ))}
-            </div>
-          )}
+    <main className="px-6 py-9 md:px-12 md:py-36">
+      <Topbar filterBy={filterBy} setFilterBy={setFilterBy} />
+      {loading ? (
+        <div className="space-y-4 mt-6">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
+            <InvoiceItemLoading key={x} />
+          ))}
         </div>
-      </main>
-    </div>
+      ) : !data || error ? null : data.invoice.length === 0 ? (
+        <div className="w-full min-h-[calc(100vh-72px-288px)] flex items-center justify-center flex-col ">
+          <NoInvoices className="md:mb-16 mb-10" />
+          <h2 className="dark:text-white text-purple-800 text-hm mb-6">
+            There is nothing here
+          </h2>
+          <p className="text-purple-100 dark:text-gray-200 max-w-[176px] text-center text-bodyv">
+            Create an invoice by clicking the New button and get started
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4 mt-6">
+          {data.invoice.map((invoice) => (
+            <InvoiceItem
+              key={invoice.id}
+              id={invoice.id}
+              dueDate={invoice.invoice_date}
+              clientName={invoice?.client_name ?? "no client name"}
+              amount={invoice.invoice_items.reduce(
+                (p, c) => p + +`${c.price}`.slice(1) * c.quantity,
+                0
+              )}
+              status={invoice.status}
+            />
+          ))}
+        </div>
+      )}
+    </main>
   );
 }
 
