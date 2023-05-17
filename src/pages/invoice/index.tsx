@@ -96,7 +96,7 @@ export default function InvoiceDetails() {
 
                 <Modal className="w-screen animate-in fade-in  duration-500 bg-black bg-opacity-50 fixed inset-0">
                   <Dialog
-                    className="animate-in slide-in-from-left   duration-500 outline-none  overflow-hidden bg-white md:rounded-r-[20px] h-screen  w-screen absolute left-0 top-0 md:w-[615px] xl:w-[719px] pt-[72px] lg:pt-0 lg:pl-[103px]"
+                    className="animate-in slide-in-from-left   duration-500 outline-none  overflow-hidden bg-white dark:bg-purple-700 md:rounded-r-[20px] h-screen  w-screen absolute left-0 top-0 md:w-[615px] xl:w-[719px] pt-[72px] lg:pt-0 lg:pl-[103px]"
                     role="dialog"
                   >
                     {({ close }) => (
@@ -113,7 +113,7 @@ export default function InvoiceDetails() {
                     0.0001) 0%, rgba(0, 0, 0, 0.1) 100%)`,
                           }}
                         ></div>
-                        <div className="absolute bottom-0 h-[105px] z-20 flex justify-end items-center w-full  rounded-t-[20px] py-8 px-14 bg-white">
+                        <div className="absolute bottom-0 h-[105px] z-20 flex justify-end items-center w-full space-x-2  md:rounded-t-[20px] py-8 px-14 bg-white dark:bg-purple-700">
                           <Button variant="secondary" onPress={() => close()}>
                             Cancel
                           </Button>
@@ -122,7 +122,7 @@ export default function InvoiceDetails() {
                             disabled={editLoading}
                             type="submit"
                             form="invoice-form"
-                            className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300"
+                            className="px-4 md:px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300"
                           >
                             {editLoading ? `Saving...` : "Save & Send"}
                           </button>
@@ -135,22 +135,27 @@ export default function InvoiceDetails() {
               <DialogTrigger>
                 <Button variant="destructive">Delete</Button>
                 <Modal className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
-                  <Dialog className="rounded-lg bg-white max-w-md p-12 outline-none">
+                  <Dialog className="rounded-lg bg-white dark:bg-purple-600 max-w-xs md:max-w-md p-8 md:p-12 outline-none">
                     {({ close }) => (
                       <>
                         <Heading className="text-hm text-purple-800 dark:text-white">
                           Confirm Deletion
                         </Heading>
-                        <p className="dark:text-gray-200 text-body my-3 text-purple-100">
+                        <p className="text-body my-3 text-purple-100">
                           Are you sure you want to delete invoice #{shortId}?
                           This action cannot be undone.
                         </p>
                         <div className="flex items-center justify-end gap-x-2">
-                          <Button variant="secondary" onPress={close}>
+                          <Button
+                            className="!px-6"
+                            variant="secondary"
+                            onPress={close}
+                          >
                             Cancel
                           </Button>
                           <Button
                             isDisabled={deleteLoading}
+                            className="!px-6"
                             variant="destructive"
                             onPress={() => {
                               deleteInvoice({

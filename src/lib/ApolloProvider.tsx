@@ -42,12 +42,8 @@ export const ApolloProviderWrapper = ({
             fields: {
               invoice: {
                 keyArgs: ["where", ["status"]],
-                merge(existing, incoming, { args }) {
-                  const merged = existing ? existing.slice(0) : [];
-                  for (let i = 0; i < incoming.length; ++i) {
-                    merged[args?.["offset"] + i] = incoming[i];
-                  }
-                  return merged;
+                merge(existing = [], incoming) {
+                  return [...existing, ...incoming];
                 },
               },
             },

@@ -9,6 +9,7 @@ fragment INVOICE_FIELDS on invoice {
   status
   project_description
   payment_terms
+  created_at
   client_address {
     ...ADDRESS_FIELDS
   }

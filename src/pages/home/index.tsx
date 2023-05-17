@@ -28,14 +28,15 @@ function Homepage() {
         status: { _in: Array.from(filterBy) as Invoice_Status_Enum[] },
       },
       order_by: {
-        updated_at: Order_By.Desc,
+        created_at: Order_By.Desc,
       },
-      offset: 0,
+
       limit: 8,
     },
 
     notifyOnNetworkStatusChange: true,
   });
+  console.log(data, "data");
   const {
     data: countData,
     loading: countLoading,
@@ -49,6 +50,7 @@ function Homepage() {
   });
 
   const handleScroll = useCallback(() => {
+    console.log("lol");
     if (
       window.innerHeight + document.documentElement.scrollTop !==
         document.documentElement.offsetHeight ||
@@ -57,8 +59,17 @@ function Homepage() {
     ) {
       return;
     }
-    fetchMore({ variables: { offset: data?.invoice?.length } });
-  }, [data, countData, fetchMore]);
+    fetchMore({
+      variables: {
+        where: {
+          status: { _in: Array.from(filterBy) as Invoice_Status_Enum[] },
+          created_at: {
+            _lt: data?.invoice[data.invoice.length - 1].created_at,
+          },
+        },
+      },
+    });
+  }, [data, countData, fetchMore, filterBy]);
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -112,7 +123,7 @@ function Homepage() {
             ))}
           </div>
           {networkStatus === NetworkStatus.fetchMore && (
-            <div className="space-y-4 mt-6 md:mt-14 xl:mt-16">
+            <div className="space-y-4 mt-4">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
                 <InvoiceItemLoading key={x} />
               ))}
