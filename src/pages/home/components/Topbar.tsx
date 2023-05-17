@@ -163,13 +163,13 @@ export default function Topbar({
                 <div className="relative h-full">
                   <UpsertInvoice setLoading={setInsertLoading} close={close} />
                   <div
-                    className="w-full  h-48 absolute bottom-12 "
+                    className="w-full bottom-10 h-48 absolute"
                     style={{
                       background: `linear-gradient(180deg, rgba(0, 0, 0,
                     0.0001) 0%, rgba(0, 0, 0, 0.1) 100%)`,
                     }}
                   ></div>
-                  <div className="absolute bottom-0 h-[105px] z-20 flex justify-between items-center w-full  rounded-t-[20px] py-8 px-14 bg-white dark:bg-purple-700">
+                  <div className="relative h-[105px]  flex justify-between items-center w-full px-6  md:rounded-t-[20px] py-8 md:px-14 bg-white dark:bg-purple-700">
                     <Button variant="secondary" onPress={() => close()}>
                       Discard
                     </Button>
@@ -179,7 +179,7 @@ export default function Topbar({
                         className="
                         text-purple-100 bg-[#373B53] dark:text-gray-200 dark:bg-[#373B53]
                       hover:text-purple-100 hover:bg-purple-800 hover:dark:text-gray-200 hover:dark:bg-purple-600
-                        px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                       px-4 md:px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                         type="submit"
                         form="draft-form"
                       >
@@ -190,7 +190,7 @@ export default function Topbar({
                         disabled={insertLoading}
                         type="submit"
                         form="invoice-form"
-                        className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 md:px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Save & Send
                       </button>

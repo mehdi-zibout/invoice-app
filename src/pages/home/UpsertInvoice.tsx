@@ -227,7 +227,7 @@ export default function CreateEditInvoice({
   }, [upsertLoading, deleteLoading, setLoading]);
 
   return (
-    <div className="py-14 pl-14 pr-6 relative z-10 ">
+    <div className="pt-14 pl-14 pr-6 relative z-10 ">
       <h2 className="text-hm text-purple-800 dark:text-white mb-11">
         {editInvoice ? (
           <>
@@ -241,7 +241,7 @@ export default function CreateEditInvoice({
       <form
         onSubmit={handleSubmit(onSubmit)}
         id="invoice-form"
-        className="overflow-y-auto h-[calc(100vh-7rem-110px)] pr-8 pb-8"
+        className="overflow-y-auto h-[calc(100vh-3.5rem-4rem-105px-72px)] lg:h-[calc(100vh-3.5rem-4rem-105px)] pr-8 pb-8"
       >
         <section className="">
           <h3 className="text-hsv text-purple-400 mb-6">Bill From</h3>
@@ -251,7 +251,7 @@ export default function CreateEditInvoice({
             {...register("bill_from_address.street_address")}
             error={errors.bill_from_address?.street_address?.message}
           />
-          <div className="grid grid-cols-3 gap-x-6 mt-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-6 mt-5">
             <Input
               label="City"
               className="w-full "
@@ -265,6 +265,7 @@ export default function CreateEditInvoice({
               error={errors.bill_from_address?.post_code?.message}
             />
             <Input
+              containerClassname="col-span-2 md:col-span-1"
               label="Country"
               className="w-full "
               {...register("bill_from_address.country")}
@@ -294,7 +295,7 @@ export default function CreateEditInvoice({
             error={errors.client_address?.street_address?.message}
           />
 
-          <div className="grid grid-cols-3 gap-x-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-6">
             <Input
               label="City"
               className="w-full "
@@ -308,13 +309,14 @@ export default function CreateEditInvoice({
               error={errors.client_address?.post_code?.message}
             />
             <Input
+              containerClassname="col-span-2 md:col-span-1"
               label="Country"
               className="w-full "
               {...register("client_address.country")}
               error={errors.client_address?.country?.message}
             />
           </div>
-          <div className="grid grid-cols-2 gap-x-6">
+          <div className="grid md:grid-cols-2 gap-y-6 gap-x-6">
             <Controller
               control={control}
               name="date"
@@ -381,101 +383,187 @@ export default function CreateEditInvoice({
           <h3 className="font-bold leading-8 text-lg tracking-tight text-[#777F98] mt-9 mb-6">
             Item List
           </h3>
-          <div className="grid grid-cols-12 gap-x-4 mt-5 w-full">
-            <p
-              className={`text-bodyv mb-2   text-purple-200 dark:text-gray-200 col-span-5`}
-            >
-              Item Name
-            </p>
-            <p
-              className={`text-bodyv mb-2   text-purple-200 dark:text-gray-200 col-span-2`}
-            >
-              Qty.
-            </p>
-            <p
-              className={`text-bodyv mb-2  text-purple-200 dark:text-gray-200 col-span-3`}
-            >
-              Price
-            </p>
-            <p
-              className={`text-bodyv mb-2  text-purple-200 dark:text-gray-200 col-span-1`}
-            >
-              Total
-            </p>
-            <p
-              className={`text-bodyv mb-2  text-purple-200 dark:text-gray-200 col-span-1`}
-            ></p>
-            {fields.map((field, index) => {
-              const total =
-                watch().items[index].quantity * watch().items[index].price;
-              return (
-                <section
-                  id={field.id}
-                  key={field.id}
-                  className="grid grid-cols-12 col-span-12 gap-x-4 items-center my-2 "
-                >
-                  <Input
-                    label="Item Name"
-                    hiddenLabel
-                    error={errors?.items?.[index]?.name?.message}
-                    {...register(`items.${index}.name` as const)}
-                    containerClassname={`col-span-5`}
-                    className="w-full"
-                  />
-                  <Input
-                    label="Qty."
-                    hiddenLabel
-                    type="number"
-                    {...register(`items.${index}.quantity` as const, {
-                      valueAsNumber: true,
-                    })}
-                    error={errors.items?.[index]?.quantity?.message}
-                    containerClassname={`col-span-2`}
-                    className="w-full"
-                  />
-                  <Input
-                    label="Price"
-                    error={errors.items?.[index]?.price?.message}
-                    hiddenLabel
-                    type="number"
-                    {...register(`items.${index}.price` as const, {
-                      valueAsNumber: true,
-                    })}
-                    containerClassname={`col-span-3`}
-                    className="w-full"
-                  />
-                  <p className="col-span-1 text-hsv text-purple-100 text-center">
-                    {isNaN(total) ? "-" : total}
-                  </p>
-                  <button
-                    className="col-span-1 group"
-                    onClick={() => {
-                      remove(index);
-                      if (editInvoice && field.itemId) {
-                        setDeletedItemsId(deletedItemsId.concat(field.itemId));
-                      }
-                    }}
+          {window.innerWidth < 768 ? (
+            <div className="md:hidden">
+              {fields.map((field, index) => {
+                const total =
+                  watch().items[index].quantity * watch().items[index].price;
+                return (
+                  <section
+                    id={field.id}
+                    key={field.id}
+                    className="grid grid-rows-2  gap-y-6   my-2 "
                   >
-                    <svg
-                      aria-hidden="true"
-                      width="13"
-                      height="16"
-                      viewBox="0 0 13 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M8.47225 0L9.36117 0.888875H12.4722V2.66667H0.027832V0.888875H3.13892L4.02783 0H8.47225ZM2.6945 16C1.71225 16 0.916707 15.2045 0.916707 14.2222V3.55554H11.5834V14.2222C11.5834 15.2045 10.7878 16 9.80562 16H2.6945Z"
-                        className="fill-[#888EB0] group-hover:fill-red-200 transition duration-300"
+                    <Input
+                      label="Item Name"
+                      error={errors?.items?.[index]?.name?.message}
+                      {...register(`items.${index}.name` as const)}
+                      className="w-full"
+                    />
+                    <div className="grid grid-cols-9 gap-x-4 items-center">
+                      <Input
+                        label="Qty."
+                        type="number"
+                        {...register(`items.${index}.quantity` as const, {
+                          valueAsNumber: true,
+                        })}
+                        error={errors.items?.[index]?.quantity?.message}
+                        containerClassname={`col-span-2`}
+                        className="w-full"
                       />
-                    </svg>
-                  </button>
-                </section>
-              );
-            })}
-          </div>
+                      <Input
+                        label="Price"
+                        error={errors.items?.[index]?.price?.message}
+                        type="number"
+                        {...register(`items.${index}.price` as const, {
+                          valueAsNumber: true,
+                        })}
+                        containerClassname={`col-span-3`}
+                        className="w-full"
+                      />
+                      <Input
+                        label="Total"
+                        readOnly
+                        value={isNaN(total) ? "-" : total}
+                        containerClassname={`col-span-3`}
+                        className="w-full !bg-opacity-0 !border-none !text-left !px-0.5 !text-purple-100 !text-hsv"
+                      />
+
+                      {/* <p className="col-span-2 text-hsv text-purple-100 text-center">
+                      {isNaN(total) ? "-" : total}
+                    </p> */}
+                      <button
+                        className="col-span-1 group mt-4 "
+                        onClick={() => {
+                          remove(index);
+                          if (editInvoice && field.itemId) {
+                            setDeletedItemsId(
+                              deletedItemsId.concat(field.itemId)
+                            );
+                          }
+                        }}
+                      >
+                        <svg
+                          aria-hidden="true"
+                          width="13"
+                          height="16"
+                          viewBox="0 0 13 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M8.47225 0L9.36117 0.888875H12.4722V2.66667H0.027832V0.888875H3.13892L4.02783 0H8.47225ZM2.6945 16C1.71225 16 0.916707 15.2045 0.916707 14.2222V3.55554H11.5834V14.2222C11.5834 15.2045 10.7878 16 9.80562 16H2.6945Z"
+                            className="fill-[#888EB0] group-hover:fill-red-200 transition duration-300"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="md:grid grid-cols-12 gap-x-4 mt-5 w-full hidden ">
+              <p
+                className={`text-bodyv mb-2   text-purple-200 dark:text-gray-200 col-span-5`}
+              >
+                Item Name
+              </p>
+              <p
+                className={`text-bodyv mb-2   text-purple-200 dark:text-gray-200 col-span-2`}
+              >
+                Qty.
+              </p>
+              <p
+                className={`text-bodyv mb-2  text-purple-200 dark:text-gray-200 col-span-3`}
+              >
+                Price
+              </p>
+              <p
+                className={`text-bodyv mb-2  text-purple-200 dark:text-gray-200 col-span-1`}
+              >
+                Total
+              </p>
+              <p
+                className={`text-bodyv mb-2  text-purple-200 dark:text-gray-200 col-span-1`}
+              ></p>
+              {fields.map((field, index) => {
+                const total =
+                  watch().items[index].quantity * watch().items[index].price;
+                return (
+                  <section
+                    id={field.id}
+                    key={field.id}
+                    className="grid grid-cols-12 col-span-12 gap-x-4 items-center my-2 "
+                  >
+                    <Input
+                      label="Item Name"
+                      hiddenLabel
+                      error={errors?.items?.[index]?.name?.message}
+                      {...register(`items.${index}.name` as const)}
+                      containerClassname={`col-span-5`}
+                      className="w-full"
+                    />
+                    <Input
+                      label="Qty."
+                      hiddenLabel
+                      type="number"
+                      {...register(`items.${index}.quantity` as const, {
+                        valueAsNumber: true,
+                      })}
+                      error={errors.items?.[index]?.quantity?.message}
+                      containerClassname={`col-span-2`}
+                      className="w-full"
+                    />
+                    <Input
+                      label="Price"
+                      error={errors.items?.[index]?.price?.message}
+                      hiddenLabel
+                      type="number"
+                      {...register(`items.${index}.price` as const, {
+                        valueAsNumber: true,
+                      })}
+                      containerClassname={`col-span-3`}
+                      className="w-full"
+                    />
+                    <p className="col-span-1 text-hsv text-purple-100 text-center">
+                      {isNaN(total) ? "-" : total}
+                    </p>
+                    <button
+                      className="col-span-1 group"
+                      onClick={() => {
+                        remove(index);
+                        if (editInvoice && field.itemId) {
+                          setDeletedItemsId(
+                            deletedItemsId.concat(field.itemId)
+                          );
+                        }
+                      }}
+                    >
+                      <svg
+                        aria-hidden="true"
+                        width="13"
+                        height="16"
+                        viewBox="0 0 13 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M8.47225 0L9.36117 0.888875H12.4722V2.66667H0.027832V0.888875H3.13892L4.02783 0H8.47225ZM2.6945 16C1.71225 16 0.916707 15.2045 0.916707 14.2222V3.55554H11.5834V14.2222C11.5834 15.2045 10.7878 16 9.80562 16H2.6945Z"
+                          className="fill-[#888EB0] group-hover:fill-red-200 transition duration-300"
+                        />
+                      </svg>
+                    </button>
+                  </section>
+                );
+              })}
+            </div>
+          )}
+
           <Button
             className="w-full mt-1"
             variant="secondary"

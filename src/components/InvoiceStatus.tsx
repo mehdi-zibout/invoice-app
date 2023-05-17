@@ -11,7 +11,7 @@ export default function InvoiceStatus({
     <div
       className={`${className}  ${getStatusStyles(
         status
-      )} bg-opacity-5 dark:bg-opacity-5 rounded-md  pt-[14px] pb-[11px] flex items-center justify-center `}
+      )} bg-opacity-5 dark:bg-opacity-5 rounded-md  pt-[14px] pb-[11px] shrink-0 w-[104px] flex items-center justify-center `}
     >
       <div
         className={`rounded-full w-2 h-2  ${getStatusStyles(status)} mr-2`}

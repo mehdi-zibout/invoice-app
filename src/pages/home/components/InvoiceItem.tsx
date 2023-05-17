@@ -20,7 +20,7 @@ export default function InvoiceItem({
 }: InvoiceItemProps) {
   return (
     <Link to={`/invoice/${id}`} className="block w-full">
-      <Card className="grid grid-cols-3 items-center hover:border-purple-400 dark:hover:border-purple-400 border border-white dark:border-purple-600 transition duration-300">
+      <Card className="hidden md:grid grid-cols-3 items-center hover:border-purple-400 dark:hover:border-purple-400 border border-white dark:border-purple-600 transition duration-300">
         <div className="col-span-2 grid grid-cols-5">
           <p className="text-purple-800 text-hsv uppercase dark:text-white">
             <span className="text-purple-200">#</span>
@@ -45,7 +45,7 @@ export default function InvoiceItem({
             {numberFormatter.format(amount)}
           </p>
           <InvoiceStatus status={status} className="col-span-3" />
-          <div className="flex justify-end">
+          <div className="justify-end flex">
             <svg
               aria-hidden="true"
               width="7"
@@ -57,6 +57,35 @@ export default function InvoiceItem({
               <path d="M1 1L5 5L1 9" stroke="#7C5DFA" strokeWidth="2" />
             </svg>
           </div>
+        </div>
+      </Card>
+      <Card className="!p-6 md:hidden hover:border-purple-400 dark:hover:border-purple-400 border border-white dark:border-purple-600 transition duration-300">
+        <div className="flex justify-between items-center mb-6">
+          <p className="text-purple-800 text-hsv uppercase dark:text-white">
+            <span className="text-purple-200">#</span>
+            {id.slice(0, 6)}
+          </p>
+          <p className="text-body text-[#858BB2] col-span-2">
+            {clientName || "No client name yet"}
+          </p>
+        </div>
+        <div className="flex justify-between items-center ">
+          <div className="">
+            <p className="text-body text-purple-200  mb-2">
+              {dueDate ? (
+                <>
+                  <span className="text-purple-100 mr-1">Due</span>
+                  {dateFormatter.format(new Date(dueDate))}
+                </>
+              ) : (
+                "No date yet"
+              )}
+            </p>
+            <p className="text-purple-800 dark:text-white text-hs ">
+              {numberFormatter.format(amount)}
+            </p>
+          </div>
+          <InvoiceStatus status={status} className="" />
         </div>
       </Card>
     </Link>
