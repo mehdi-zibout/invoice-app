@@ -57,7 +57,9 @@ const invoiceSchema = z.object({
     required_error: "Please select a date and time",
     invalid_type_error: "That's not a date!",
   }),
-  items: z.array(itemSchema),
+  items: z
+    .array(itemSchema)
+    .nonempty({ message: "The invoice should have at least one item" }),
   bill_from_address: addressSchema,
   client_address: addressSchema,
 });
@@ -124,7 +126,9 @@ export default function CreateEditInvoice({
   } = useForm<InvoiceType>({
     defaultValues: {
       ...editInvoice,
-      date: editInvoice && new Date(editInvoice?.date as unknown as string),
+      date: editInvoice?.date
+        ? new Date(editInvoice?.date as unknown as string)
+        : undefined,
     } || {
       items: [
         {
@@ -474,6 +478,9 @@ export default function CreateEditInvoice({
                 </section>
               );
             })}
+            <p className="col-span-12 my-2 text-red-200 text-bodyv ">
+              {errors.items?.message}
+            </p>
           </div>
           <Button
             className="w-full mt-1"

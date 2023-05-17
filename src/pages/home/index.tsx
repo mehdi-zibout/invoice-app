@@ -11,6 +11,8 @@ import InvoiceItem, { InvoiceItemLoading } from "./components/InvoiceItem";
 import Topbar from "./components/Topbar";
 import type { Selection } from "react-aria-components";
 import { NetworkStatus } from "@apollo/client";
+import { getLocalTimeZone, parseDate } from "@internationalized/date";
+import getPaymentTermsDays from "../../utils/payment_terms";
 
 function Homepage() {
   const [filterBy, setFilterBy] = useState<Selection>(
@@ -94,7 +96,15 @@ function Homepage() {
               <InvoiceItem
                 key={invoice.id}
                 id={invoice.id}
-                dueDate={invoice.date}
+                dueDate={
+                  invoice?.payment_terms
+                    ? parseDate(invoice.date)
+                        .add({
+                          days: getPaymentTermsDays(invoice?.payment_terms),
+                        })
+                        .toDate(getLocalTimeZone())
+                    : undefined
+                }
                 clientName={invoice?.client_name ?? "no client name"}
                 amount={invoice.items.reduce((p, c) => p + c.total, 0)}
                 status={invoice.status}

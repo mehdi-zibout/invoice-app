@@ -7,7 +7,7 @@ import { dateFormatter, numberFormatter } from "../../../utils/formatters";
 type InvoiceItemProps = {
   id: string;
   clientName: string;
-  dueDate: string;
+  dueDate?: Date;
   amount: number;
   status: Invoice_Status_Enum;
 };
@@ -26,10 +26,18 @@ export default function InvoiceItem({
           {id.slice(0, 6)}
         </p>
         <p className="text-body text-purple-200 col-span-2">
-          <span className="text-purple-100 mr-1">Due</span>
-          {dateFormatter.format(new Date(dueDate))}
+          {dueDate ? (
+            <>
+              <span className="text-purple-100 mr-1">Due</span>
+              {dateFormatter.format(new Date(dueDate))}
+            </>
+          ) : (
+            "No date yet"
+          )}
         </p>
-        <p className="text-body text-[#858BB2] col-span-2">{clientName}</p>
+        <p className="text-body text-[#858BB2] col-span-2">
+          {clientName || "No client name yet"}
+        </p>
       </div>
       <div className="grid grid-cols-7 items-center">
         <p className="text-purple-800 text-hs col-span-3">

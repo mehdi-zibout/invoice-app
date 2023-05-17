@@ -12,7 +12,6 @@ import {
   Invoice_Status_Enum,
   InvoicesDocument,
   InvoicesTotalDocument,
-  Payment_Terms_Enum,
   useDeleteInvoiceMutation,
   useInvoiceByIdQuery,
   useMarkAsPaidMutation,
@@ -23,6 +22,7 @@ import { dateFormatter, numberFormatter } from "../../utils/formatters";
 import { getLocalTimeZone, parseDate } from "@internationalized/date";
 import UpsertInvoice from "../home/UpsertInvoice";
 import { useState } from "react";
+import getPaymentTermsDays from "../../utils/payment_terms";
 
 export default function InvoiceDetails() {
   const { invoiceId } = useParams();
@@ -212,7 +212,7 @@ export default function InvoiceDetails() {
                   Invoice Date
                 </p>
                 <p className="dark:text-white text-purple-800 text-hs">
-                  {dateFormatter.format(new Date(invoice.date))}
+                  {invoice.date && dateFormatter.format(new Date(invoice.date))}
                 </p>
                 <p className="text-purple-200 dark:text-gray-200 text-body mt-8 mb-3">
                   Payment Due
@@ -296,17 +296,4 @@ export default function InvoiceDetails() {
       )}
     </main>
   );
-}
-
-function getPaymentTermsDays(paymentTerms: Payment_Terms_Enum): number {
-  switch (paymentTerms) {
-    case Payment_Terms_Enum.Net1:
-      return 1;
-    case Payment_Terms_Enum.Net14:
-      return 14;
-    case Payment_Terms_Enum.Net30:
-      return 30;
-    case Payment_Terms_Enum.Net7:
-      return 7;
-  }
 }
