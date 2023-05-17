@@ -8,8 +8,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import Card from "../../components/Card";
 import InvoiceStatus from "../../components/InvoiceStatus";
 import {
+  Invoice_Status_Enum,
   Payment_Terms_Enum,
   useInvoiceByIdQuery,
+  useMarkAsPaidMutation,
 } from "../../generated/graphql";
 import Button from "../../components/Button";
 import { ReactComponent as NoInvoices } from "../../assets/no-invoices.svg";
@@ -20,11 +22,12 @@ import UpsertInvoice from "../home/UpsertInvoice";
 export default function InvoiceDetails() {
   const { invoiceId } = useParams();
   const navigate = useNavigate();
+
   const { data, loading, error } = useInvoiceByIdQuery({
     variables: { id: invoiceId },
   });
   const invoice = data?.invoice_by_pk;
-  console.log(invoice);
+  const [markAsPaid] = useMarkAsPaidMutation();
   return (
     <main className="px-6 py-9 md:px-12 md:py-16">
       <AriaButton
@@ -78,7 +81,7 @@ export default function InvoiceDetails() {
                   >
                     {({ close }) => (
                       <div className="relative h-full">
-                        <UpsertInvoice editInvoice={invoice} />
+                        <UpsertInvoice editInvoice={invoice} close={close} />
                         <div
                           className="w-full  h-48 absolute bottom-12 "
                           style={{
@@ -88,19 +91,16 @@ export default function InvoiceDetails() {
                         ></div>
                         <div className="absolute bottom-0 h-[105px] z-20 flex justify-between items-center w-full  rounded-t-[20px] py-8 px-14 bg-white">
                           <Button variant="secondary" onPress={() => close()}>
-                            Discard
+                            Cancel
                           </Button>
-                          <div className="space-x-2">
-                            <Button variant="tertiary">Save as Draft</Button>
 
-                            <button
-                              type="submit"
-                              form="invoice-form"
-                              className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300"
-                            >
-                              Save & Send
-                            </button>
-                          </div>
+                          <button
+                            type="submit"
+                            form="invoice-form"
+                            className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300"
+                          >
+                            Save & Send
+                          </button>
                         </div>
                       </div>
                     )}
@@ -108,7 +108,25 @@ export default function InvoiceDetails() {
                 </Modal>
               </DialogTrigger>
               <Button variant="destructive">Delete</Button>
-              <Button variant="primary">Mark as Paid</Button>
+              <Button
+                className={"disabled:bg-opacity-10"}
+                isDisabled={invoice.status === Invoice_Status_Enum.Paid}
+                onPress={() => {
+                  markAsPaid({
+                    variables: { id: invoice.id },
+                    optimisticResponse: {
+                      update_invoice_by_pk: {
+                        __typename: "invoice",
+                        id: invoice.id,
+                        status: Invoice_Status_Enum.Paid,
+                      },
+                    },
+                  });
+                }}
+                variant="primary"
+              >
+                Mark as Paid
+              </Button>
             </div>
           </Card>
           <Card className="!p-12">
@@ -188,7 +206,7 @@ export default function InvoiceDetails() {
                 Total
               </p>
               <ul className="col-span-9 space-y-8 mt-8">
-                {invoice.items.map((item) => (
+                {invoice?.items?.map((item) => (
                   <li key={item.itemId} className="grid grid-cols-9">
                     <p className="dark:text-white text-purple-800 text-hs col-span-4">
                       {item.name}
@@ -210,7 +228,7 @@ export default function InvoiceDetails() {
               <p className="text-body text-white">Amount Due</p>
               <p className="text-hm text-white">
                 {numberFormatter.format(
-                  invoice.items.reduce((p, c) => p + c.total, 0)
+                  invoice?.items?.reduce((p, c) => p + c.total, 0)
                 )}
               </p>
             </div>

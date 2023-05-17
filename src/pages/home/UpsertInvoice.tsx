@@ -9,19 +9,20 @@ import {
   useFieldArray,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
+import { getLocalTimeZone, parseDate } from "@internationalized/date";
 import Button from "../../components/Button";
 import {
   Address_Constraint,
   Address_Update_Column,
+  InvoiceByIdDocument,
   Invoice_Constraint,
   Invoice_Status_Enum,
   Invoice_Update_Column,
   InvoicesDocument,
   InvoicesTotalDocument,
   Item_Constraint,
+  Item_FieldsFragment,
   Item_Update_Column,
-  Order_By,
   Payment_Terms_Enum,
   useDeleteItemMutation,
   useUpsertInvoiceMutation,
@@ -72,55 +73,43 @@ const PAYMENT_TERMS = [
 
 export default function CreateEditInvoice({
   editInvoice,
+  close,
 }: {
   editInvoice?: InvoiceType & { id: string };
+  close: () => void;
 }) {
   const navigate = useNavigate();
   const [deletedItemsId, setDeletedItemsId] = useState<string[]>([]);
-  const [deleteItem] = useDeleteItemMutation();
-  const [upsertInvoice] = useUpsertInvoiceMutation({
-    update: editInvoice
-      ? undefined
-      : (cache, { data }) => {
-          cache.updateQuery(
-            {
-              query: InvoicesDocument,
-              variables: {
-                where: {
-                  status: { _in: ["DRAFT", "PENDING", "PAID"] },
-                },
-                order_by: {
-                  updated_at: Order_By.Desc,
-                },
-              },
-            },
-            ({ invoice }) => ({
-              invoice: [data?.insert_invoice_one, ...invoice],
-            })
-          );
-          cache.updateQuery(
-            {
-              query: InvoicesTotalDocument,
-              variables: {
-                where: {
-                  status: { _in: ["DRAFT", "PENDING", "PAID"] },
-                },
-              },
-            },
-            (countData) => ({
-              invoice_aggregate: {
-                aggregate: {
-                  count: countData.invoice_aggregate.aggregate.count + 1,
-                },
-              },
-            })
-          );
+  const [deleteItem] = useDeleteItemMutation({
+    update: (cache, { data: deletedItems }) => {
+      cache.updateQuery(
+        {
+          query: InvoiceByIdDocument,
+          variables: {
+            id: editInvoice?.id,
+          },
         },
-    onCompleted: (data) => {
-      navigate(`/invoice/${data.insert_invoice_one?.id}`);
+        (data) => {
+          ({
+            invoice_by_pk: {
+              ...data.invoice_by_pk,
+              items: data.invoice_by_pk.items.filter(
+                (item: Item_FieldsFragment) =>
+                  !deletedItems?.delete_item?.returning.find(
+                    (deletedItem) => deletedItem.id === item.id
+                  )
+              ),
+            },
+          });
+        }
+      );
     },
-    onQueryUpdated(observableQuery) {
-      return observableQuery.refetch();
+  });
+  const [upsertInvoice] = useUpsertInvoiceMutation({
+    refetchQueries: [InvoicesDocument, InvoicesTotalDocument],
+    onCompleted: (data) => {
+      if (!editInvoice) navigate(`/invoice/${data.insert_invoice_one?.id}`);
+      close();
     },
   });
   const {
@@ -128,7 +117,7 @@ export default function CreateEditInvoice({
     control,
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     watch,
   } = useForm<InvoiceType>({
     defaultValues: {
@@ -317,11 +306,9 @@ export default function CreateEditInvoice({
                 <DatePicker
                   defaultValue={
                     value &&
-                    new CalendarDate(
-                      value.getFullYear(),
-                      value.getMonth() + 1,
-                      value.getDate()
-                    )
+                    (typeof value === "string"
+                      ? parseDate(value)
+                      : parseDate(value.toISOString().slice(0, 10)))
                   }
                   label="Invoice Date"
                   error={error?.message}

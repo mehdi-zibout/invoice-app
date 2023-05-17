@@ -1,5 +1,7 @@
 mutation DeleteItem($where: item_bool_exp!) {
   delete_item(where: $where) {
-    affected_rows
+    returning {
+      id
+    }
   }
 }

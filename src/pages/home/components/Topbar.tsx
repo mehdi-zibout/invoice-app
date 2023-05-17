@@ -153,7 +153,7 @@ export default function Topbar({ filterBy, setFilterBy }: TopBarProps) {
             >
               {({ close }) => (
                 <div className="relative h-full">
-                  <UpsertInvoice />
+                  <UpsertInvoice close={close} />
                   <div
                     className="w-full  h-48 absolute bottom-12 "
                     style={{

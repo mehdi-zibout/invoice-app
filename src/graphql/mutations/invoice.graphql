@@ -8,3 +8,16 @@ mutation UpsertInvoice(
     ...INVOICE_FIELDS
   }
 }
+
+mutation MarkAsPaid($id: uuid!) {
+  update_invoice_by_pk(pk_columns: { id: $id }, _set: { status: PAID }) {
+    id
+    status
+  }
+}
+
+mutation DeleteInvoice($id: uuid!) {
+  delete_invoice_by_pk(id: $id) {
+    id
+  }
+}

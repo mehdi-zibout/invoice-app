@@ -1954,9 +1954,9 @@ export type Uuid_Comparison_Exp = {
 
 export type Address_FieldsFragment = { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null };
 
-export type Invoice_FieldsFragment = { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> };
+export type Invoice_FieldsFragment = { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', id: any, invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> };
 
-export type Item_FieldsFragment = { __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any };
+export type Item_FieldsFragment = { __typename?: 'item', id: any, invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any };
 
 export type UpsertInvoiceMutationVariables = Exact<{
   object: Invoice_Insert_Input;
@@ -1964,14 +1964,28 @@ export type UpsertInvoiceMutationVariables = Exact<{
 }>;
 
 
-export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> } | null };
+export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', id: any, invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> } | null };
+
+export type MarkAsPaidMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type MarkAsPaidMutation = { __typename?: 'mutation_root', update_invoice_by_pk?: { __typename?: 'invoice', id: any, status: Invoice_Status_Enum } | null };
+
+export type DeleteInvoiceMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type DeleteInvoiceMutation = { __typename?: 'mutation_root', delete_invoice_by_pk?: { __typename?: 'invoice', id: any } | null };
 
 export type DeleteItemMutationVariables = Exact<{
   where: Item_Bool_Exp;
 }>;
 
 
-export type DeleteItemMutation = { __typename?: 'mutation_root', delete_item?: { __typename?: 'item_mutation_response', affected_rows: number } | null };
+export type DeleteItemMutation = { __typename?: 'mutation_root', delete_item?: { __typename?: 'item_mutation_response', returning: Array<{ __typename?: 'item', id: any }> } | null };
 
 export type InvoicesQueryVariables = Exact<{
   where?: InputMaybe<Invoice_Bool_Exp>;
@@ -1982,7 +1996,7 @@ export type InvoicesQueryVariables = Exact<{
 }>;
 
 
-export type InvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> }> };
+export type InvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', id: any, invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> }> };
 
 export type InvoicesTotalQueryVariables = Exact<{
   distinct_on?: InputMaybe<Array<Invoice_Select_Column> | Invoice_Select_Column>;
@@ -2000,7 +2014,7 @@ export type InvoiceByIdQueryVariables = Exact<{
 }>;
 
 
-export type InvoiceByIdQuery = { __typename?: 'query_root', invoice_by_pk?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> } | null };
+export type InvoiceByIdQuery = { __typename?: 'query_root', invoice_by_pk?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', id: any, invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> } | null };
 
 export const Address_FieldsFragmentDoc = gql`
     fragment ADDRESS_FIELDS on address {
@@ -2013,6 +2027,7 @@ export const Address_FieldsFragmentDoc = gql`
     `;
 export const Item_FieldsFragmentDoc = gql`
     fragment ITEM_FIELDS on item {
+  id
   itemId: id
   invoice_id
   name
@@ -2076,10 +2091,79 @@ export function useUpsertInvoiceMutation(baseOptions?: Apollo.MutationHookOption
 export type UpsertInvoiceMutationHookResult = ReturnType<typeof useUpsertInvoiceMutation>;
 export type UpsertInvoiceMutationResult = Apollo.MutationResult<UpsertInvoiceMutation>;
 export type UpsertInvoiceMutationOptions = Apollo.BaseMutationOptions<UpsertInvoiceMutation, UpsertInvoiceMutationVariables>;
+export const MarkAsPaidDocument = gql`
+    mutation MarkAsPaid($id: uuid!) {
+  update_invoice_by_pk(pk_columns: {id: $id}, _set: {status: PAID}) {
+    id
+    status
+  }
+}
+    `;
+export type MarkAsPaidMutationFn = Apollo.MutationFunction<MarkAsPaidMutation, MarkAsPaidMutationVariables>;
+
+/**
+ * __useMarkAsPaidMutation__
+ *
+ * To run a mutation, you first call `useMarkAsPaidMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkAsPaidMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markAsPaidMutation, { data, loading, error }] = useMarkAsPaidMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useMarkAsPaidMutation(baseOptions?: Apollo.MutationHookOptions<MarkAsPaidMutation, MarkAsPaidMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<MarkAsPaidMutation, MarkAsPaidMutationVariables>(MarkAsPaidDocument, options);
+      }
+export type MarkAsPaidMutationHookResult = ReturnType<typeof useMarkAsPaidMutation>;
+export type MarkAsPaidMutationResult = Apollo.MutationResult<MarkAsPaidMutation>;
+export type MarkAsPaidMutationOptions = Apollo.BaseMutationOptions<MarkAsPaidMutation, MarkAsPaidMutationVariables>;
+export const DeleteInvoiceDocument = gql`
+    mutation DeleteInvoice($id: uuid!) {
+  delete_invoice_by_pk(id: $id) {
+    id
+  }
+}
+    `;
+export type DeleteInvoiceMutationFn = Apollo.MutationFunction<DeleteInvoiceMutation, DeleteInvoiceMutationVariables>;
+
+/**
+ * __useDeleteInvoiceMutation__
+ *
+ * To run a mutation, you first call `useDeleteInvoiceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteInvoiceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteInvoiceMutation, { data, loading, error }] = useDeleteInvoiceMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteInvoiceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteInvoiceMutation, DeleteInvoiceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteInvoiceMutation, DeleteInvoiceMutationVariables>(DeleteInvoiceDocument, options);
+      }
+export type DeleteInvoiceMutationHookResult = ReturnType<typeof useDeleteInvoiceMutation>;
+export type DeleteInvoiceMutationResult = Apollo.MutationResult<DeleteInvoiceMutation>;
+export type DeleteInvoiceMutationOptions = Apollo.BaseMutationOptions<DeleteInvoiceMutation, DeleteInvoiceMutationVariables>;
 export const DeleteItemDocument = gql`
     mutation DeleteItem($where: item_bool_exp!) {
   delete_item(where: $where) {
-    affected_rows
+    returning {
+      id
+    }
   }
 }
     `;

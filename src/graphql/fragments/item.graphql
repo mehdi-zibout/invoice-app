@@ -1,4 +1,5 @@
 fragment ITEM_FIELDS on item {
+  id
   itemId: id
   invoice_id
   name
