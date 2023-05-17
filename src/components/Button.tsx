@@ -52,7 +52,7 @@ function getBackgroundColor(variant: VariantType): [string, string] {
     case "secondary":
       return [
         "bg-[#F9FAFE] text-purple-200 dark:bg-purple-500 dark:text-white",
-        "text-purple-200 bg-[#DFE3FA] dark:text-gray-200 dark:bg-white",
+        "text-purple-200 bg-[#DFE3FA] dark:text-purple-200 dark:bg-white",
       ];
     case "destructive":
       return ["bg-red-200 text-white", "bg-red-100 text-white"];

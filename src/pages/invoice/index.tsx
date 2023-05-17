@@ -45,7 +45,7 @@ export default function InvoiceDetails() {
     <main className="px-6 py-9 md:px-12 md:py-16">
       <AriaButton
         onPress={() => navigate(-1)}
-        className="text-purple-800 dark:text-white hover:text-purple-100 text-hsv mb-8 transition duration-300 group"
+        className="text-purple-800 dark:text-white dark:hover:text-purple-100 hover:text-purple-100 text-hsv mb-8 transition duration-300 group"
       >
         <svg
           width="6"

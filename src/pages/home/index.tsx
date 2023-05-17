@@ -91,7 +91,7 @@ function Homepage() {
         </div>
       ) : (
         <>
-          <div className="space-y-4 mt-6">
+          <div className="space-y-4 mt-6 md:mt-14 xl:mt-16">
             {data.invoice.map((invoice) => (
               <InvoiceItem
                 key={invoice.id}
@@ -112,7 +112,7 @@ function Homepage() {
             ))}
           </div>
           {networkStatus === NetworkStatus.fetchMore && (
-            <div className="space-y-4 mt-6">
+            <div className="space-y-4 mt-6 md:mt-14 xl:mt-16">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
                 <InvoiceItemLoading key={x} />
               ))}

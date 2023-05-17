@@ -93,11 +93,15 @@ export default function Topbar({
                     <div className="gap-x-3 flex items-center justify-start">
                       <div
                         className={` w-4 h-4 transition duration-300 rounded-sm border ${
-                          isHovered || isFocused
+                          isHovered || isFocused || isSelected
                             ? "border-purple-400"
-                            : "border-gray-200"
+                            : "border-gray-200 dark:border-purple-600"
                         } flex items-center justify-center
-                    ${isSelected ? "bg-purple-400" : "bg-gray-200 "}
+                    ${
+                      isSelected
+                        ? "bg-purple-400"
+                        : "bg-gray-200 dark:bg-purple-600 "
+                    }
                     `}
                       >
                         {isSelected && (
@@ -152,7 +156,7 @@ export default function Topbar({
           </Button>
           <Modal className="w-screen animate-in fade-in  duration-500 bg-black bg-opacity-50 fixed inset-0">
             <Dialog
-              className="animate-in slide-in-from-left   duration-500 outline-none  overflow-hidden bg-white md:rounded-r-[20px] h-screen  w-screen absolute left-0 top-0 md:w-[615px] xl:w-[719px] pt-[72px] lg:pt-0 lg:pl-[103px]"
+              className="animate-in slide-in-from-left   duration-500 outline-none  overflow-hidden bg-white dark:bg-purple-700 md:rounded-r-[20px] h-screen  w-screen absolute left-0 top-0 md:w-[615px] xl:w-[719px] pt-[72px] lg:pt-0 lg:pl-[103px]"
               role="dialog"
             >
               {({ close }) => (
@@ -165,7 +169,7 @@ export default function Topbar({
                     0.0001) 0%, rgba(0, 0, 0, 0.1) 100%)`,
                     }}
                   ></div>
-                  <div className="absolute bottom-0 h-[105px] z-20 flex justify-between items-center w-full  rounded-t-[20px] py-8 px-14 bg-white">
+                  <div className="absolute bottom-0 h-[105px] z-20 flex justify-between items-center w-full  rounded-t-[20px] py-8 px-14 bg-white dark:bg-purple-700">
                     <Button variant="secondary" onPress={() => close()}>
                       Discard
                     </Button>

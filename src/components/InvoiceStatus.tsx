@@ -11,7 +11,7 @@ export default function InvoiceStatus({
     <div
       className={`${className}  ${getStatusStyles(
         status
-      )} bg-opacity-5 rounded-md  pt-[14px] pb-[11px] flex items-center justify-center `}
+      )} bg-opacity-5 dark:bg-opacity-5 rounded-md  pt-[14px] pb-[11px] flex items-center justify-center `}
     >
       <div
         className={`rounded-full w-2 h-2  ${getStatusStyles(status)} mr-2`}
@@ -24,7 +24,7 @@ export default function InvoiceStatus({
 function getStatusStyles(status: Invoice_Status_Enum): string {
   switch (status) {
     case Invoice_Status_Enum.Draft:
-      return "bg-[#373B53] text-[#373B53]";
+      return "bg-[#373B53] text-[#373B53] dark:text-gray-200 dark:bg-gray-200 ";
     case Invoice_Status_Enum.Paid:
       return "bg-[#33D69F] text-[#33D69F]";
     case Invoice_Status_Enum.Pending:

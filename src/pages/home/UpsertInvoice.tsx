@@ -34,32 +34,30 @@ const paymentTermsSchema = z.nativeEnum(Payment_Terms_Enum);
 
 const addressSchema = z.object({
   id: z.string().uuid().optional(),
-  street_address: z.string().min(1, "Street address is required"),
-  city: z.string().min(1, "City is required"),
-  post_code: z.string().min(1, "Post Code is required"),
-  country: z.string().min(1, "Country is required"),
+  street_address: z.string().min(1, " "),
+  city: z.string().min(1, " "),
+  post_code: z.string().min(1, " "),
+  country: z.string().min(1, " "),
 });
 
 const itemSchema = z.object({
   itemId: z.string().uuid().optional(),
-  name: z.string().min(1, "Item's name is required"),
-  quantity: z.number().min(1, "Quantity is required"),
-  price: z.number().min(0, "Price is required"),
+  name: z.string().min(1, " "),
+  quantity: z.number().min(1, " "),
+  price: z.number().min(0, " "),
 });
 
 const invoiceSchema = z.object({
   id: z.string().uuid().optional(),
-  client_name: z.string().min(1, "Client's name is required"),
-  client_email: z.string().email("Invalid email").min(1, "Email is required"),
-  project_description: z.string(),
+  client_name: z.string().min(1, " "),
+  client_email: z.string().min(1, " ").email("Invalid email"),
+  project_description: z.string().min(1, " "),
   payment_terms: paymentTermsSchema,
   date: z.date({
-    required_error: "Please select a date and time",
+    required_error: " ",
     invalid_type_error: "That's not a date!",
   }),
-  items: z
-    .array(itemSchema)
-    .nonempty({ message: "The invoice should have at least one item" }),
+  items: z.array(itemSchema).nonempty({ message: "- An item must be added" }),
   bill_from_address: addressSchema,
   client_address: addressSchema,
 });
@@ -124,20 +122,23 @@ export default function CreateEditInvoice({
     formState: { errors },
     watch,
   } = useForm<InvoiceType>({
-    defaultValues: {
-      ...editInvoice,
-      date: editInvoice?.date
-        ? new Date(editInvoice?.date as unknown as string)
-        : undefined,
-    } || {
-      items: [
-        {
-          name: "",
-          quantity: "" as unknown as number,
-          price: "" as unknown as number,
+    defaultValues: editInvoice
+      ? {
+          ...editInvoice,
+          date: editInvoice?.date
+            ? new Date(editInvoice?.date as unknown as string)
+            : undefined,
+        }
+      : {
+          payment_terms: Payment_Terms_Enum.Net30,
+          items: [
+            {
+              name: "",
+              quantity: "" as unknown as number,
+              price: "" as unknown as number,
+            },
+          ],
         },
-      ],
-    },
     resolver: zodResolver(invoiceSchema),
   });
   const onSubmit: SubmitHandler<InvoiceType> = ({
@@ -281,6 +282,7 @@ export default function CreateEditInvoice({
           />
           <Input
             label="Client's Email"
+            placeholder="e.g. email@example.com"
             className="w-full "
             {...register("client_email")}
             error={errors.client_email?.message}
@@ -369,6 +371,7 @@ export default function CreateEditInvoice({
           </div>
           <Input
             label="Project Description"
+            placeholder="e.g. Graphic Design Service"
             className="w-full "
             {...register("project_description")}
             error={errors.project_description?.message}
@@ -411,47 +414,41 @@ export default function CreateEditInvoice({
                   key={field.id}
                   className="grid grid-cols-12 col-span-12 gap-x-4 items-center my-2 "
                 >
-                  <input
+                  <Input
+                    label="Item Name"
+                    hiddenLabel
+                    error={errors?.items?.[index]?.name?.message}
                     {...register(`items.${index}.name` as const)}
-                    className={`col-span-5
-                  px-5 py-3 outline-none dark:bg-purple-600 bg-white  border rounded-[4px] ${
-                    errors.items?.[index]?.name
-                      ? "border-red-200"
-                      : "border-gray-200 dark:border-purple-500 active:border-purple-300 hover:border-purple-300 focus-within:border-purple-300"
-                  }
-                  `}
+                    containerClassname={`col-span-5`}
+                    className="w-full"
                   />
-                  <input
+                  <Input
+                    label="Qty."
+                    hiddenLabel
                     type="number"
                     {...register(`items.${index}.quantity` as const, {
                       valueAsNumber: true,
                     })}
-                    className={`col-span-2
-                  text-center px-5 py-3 outline-none dark:bg-purple-600 bg-white  border rounded-[4px] ${
-                    errors.items?.[index]?.quantity
-                      ? "border-red-200"
-                      : "border-gray-200 dark:border-purple-500 active:border-purple-300 hover:border-purple-300 focus-within:border-purple-300"
-                  }
-                  `}
+                    error={errors.items?.[index]?.quantity?.message}
+                    containerClassname={`col-span-2`}
+                    className="w-full"
                   />
-                  <input
+                  <Input
+                    label="Price"
+                    error={errors.items?.[index]?.price?.message}
+                    hiddenLabel
                     type="number"
                     {...register(`items.${index}.price` as const, {
                       valueAsNumber: true,
                     })}
-                    className={`col-span-3
-                  px-5 py-3 outline-none dark:bg-purple-600 bg-white  border rounded-[4px] ${
-                    errors.items?.[index]?.price
-                      ? "border-red-200"
-                      : "border-gray-200 dark:border-purple-500 active:border-purple-300 hover:border-purple-300 focus-within:border-purple-300"
-                  }
-                  `}
+                    containerClassname={`col-span-3`}
+                    className="w-full"
                   />
                   <p className="col-span-1 text-hsv text-purple-100 text-center">
                     {isNaN(total) ? "-" : total}
                   </p>
                   <button
-                    className="col-span-1"
+                    className="col-span-1 group"
                     onClick={() => {
                       remove(index);
                       if (editInvoice && field.itemId) {
@@ -471,16 +468,13 @@ export default function CreateEditInvoice({
                         fillRule="evenodd"
                         clipRule="evenodd"
                         d="M8.47225 0L9.36117 0.888875H12.4722V2.66667H0.027832V0.888875H3.13892L4.02783 0H8.47225ZM2.6945 16C1.71225 16 0.916707 15.2045 0.916707 14.2222V3.55554H11.5834V14.2222C11.5834 15.2045 10.7878 16 9.80562 16H2.6945Z"
-                        fill="#888EB0"
+                        className="fill-[#888EB0] group-hover:fill-red-200 transition duration-300"
                       />
                     </svg>
                   </button>
                 </section>
               );
             })}
-            <p className="col-span-12 my-2 text-red-200 text-bodyv ">
-              {errors.items?.message}
-            </p>
           </div>
           <Button
             className="w-full mt-1"
@@ -496,6 +490,10 @@ export default function CreateEditInvoice({
           >
             + Add New Item
           </Button>
+          <ul className="mt-8 mb-2 text-red-200 text-bodyv ">
+            <li className="">{errors && "- All fields must be added"}</li>
+            <li className="">{errors.items?.message}</li>
+          </ul>
         </section>
       </form>
       <form
