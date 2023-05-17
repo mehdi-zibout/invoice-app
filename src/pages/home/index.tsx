@@ -1,14 +1,16 @@
 /// <reference types="vite-plugin-svgr/client" />
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ReactComponent as NoInvoices } from "../../assets/no-invoices.svg";
 import {
   Invoice_Status_Enum,
   Order_By,
   useInvoicesQuery,
+  useInvoicesTotalQuery,
 } from "../../generated/graphql";
 import InvoiceItem, { InvoiceItemLoading } from "./components/InvoiceItem";
 import Topbar from "./components/Topbar";
 import type { Selection } from "react-aria-components";
+import { NetworkStatus } from "@apollo/client";
 
 function Homepage() {
   const [filterBy, setFilterBy] = useState<Selection>(
@@ -18,7 +20,7 @@ function Homepage() {
       Invoice_Status_Enum.Paid,
     ])
   );
-  const { data, loading, error } = useInvoicesQuery({
+  const { data, loading, error, fetchMore, networkStatus } = useInvoicesQuery({
     variables: {
       where: {
         status: { _in: Array.from(filterBy) as Invoice_Status_Enum[] },
@@ -26,13 +28,51 @@ function Homepage() {
       order_by: {
         updated_at: Order_By.Desc,
       },
+      offset: 0,
+      limit: 8,
+    },
+    notifyOnNetworkStatusChange: true,
+  });
+  const {
+    data: countData,
+    loading: countLoading,
+    error: countError,
+  } = useInvoicesTotalQuery({
+    variables: {
+      where: {
+        status: { _in: Array.from(filterBy) as Invoice_Status_Enum[] },
+      },
     },
   });
 
+  const handleScroll = useCallback(() => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop !==
+        document.documentElement.offsetHeight ||
+      (data?.invoice?.length ?? 0) >=
+        (countData?.invoice_aggregate?.aggregate?.count ?? 0)
+    ) {
+      return;
+    }
+    fetchMore({ variables: { offset: data?.invoice?.length } });
+  }, [data, countData, loading, fetchMore]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
   return (
     <main className="px-6 py-9 md:px-12 md:py-36">
-      <Topbar filterBy={filterBy} setFilterBy={setFilterBy} />
-      {loading ? (
+      <Topbar
+        invoicesCount={countData?.invoice_aggregate.aggregate?.count}
+        error={countError}
+        loading={countLoading}
+        filterBy={filterBy}
+        setFilterBy={setFilterBy}
+      />
+      {loading &&
+      (networkStatus === NetworkStatus.setVariables ||
+        networkStatus === NetworkStatus.loading) ? (
         <div className="space-y-4 mt-6">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
             <InvoiceItemLoading key={x} />
@@ -49,18 +89,27 @@ function Homepage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4 mt-6">
-          {data.invoice.map((invoice) => (
-            <InvoiceItem
-              key={invoice.id}
-              id={invoice.id}
-              dueDate={invoice.date}
-              clientName={invoice?.client_name ?? "no client name"}
-              amount={invoice.items.reduce((p, c) => p + c.total, 0)}
-              status={invoice.status}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-4 mt-6">
+            {data.invoice.map((invoice) => (
+              <InvoiceItem
+                key={invoice.id}
+                id={invoice.id}
+                dueDate={invoice.date}
+                clientName={invoice?.client_name ?? "no client name"}
+                amount={invoice.items.reduce((p, c) => p + c.total, 0)}
+                status={invoice.status}
+              />
+            ))}
+          </div>
+          {networkStatus === NetworkStatus.fetchMore && (
+            <div className="space-y-4 mt-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => (
+                <InvoiceItemLoading key={x} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </main>
   );

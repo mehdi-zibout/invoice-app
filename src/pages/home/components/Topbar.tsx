@@ -20,16 +20,19 @@ import { ApolloError } from "@apollo/client";
 type TopBarProps = {
   filterBy: Selection;
   setFilterBy: React.Dispatch<React.SetStateAction<Selection>>;
+  invoicesCount?: number;
+  loading: boolean;
+  error?: ApolloError;
 };
-export default function Topbar({ filterBy, setFilterBy }: TopBarProps) {
+export default function Topbar({
+  filterBy,
+  setFilterBy,
+  invoicesCount,
+  loading,
+  error,
+}: TopBarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { data, loading, error } = useInvoicesTotalQuery({
-    variables: {
-      where: {
-        status: { _in: Array.from(filterBy) as Invoice_Status_Enum[] },
-      },
-    },
-  });
+
   return (
     <section className="flex items-center justify-between">
       <div className="">
@@ -38,7 +41,7 @@ export default function Topbar({ filterBy, setFilterBy }: TopBarProps) {
         </h1>
         <p className="text-purple-100 text-bodyv">
           {generateInvoicesCountMessage(
-            data?.invoice_aggregate.aggregate?.count,
+            invoicesCount,
             loading,
             error,
             Array.from(filterBy) as Invoice_Status_Enum[]

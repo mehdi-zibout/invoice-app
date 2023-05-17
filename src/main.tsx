@@ -7,7 +7,20 @@ import { router } from "./routes.tsx";
 import { InvoicesDocument } from "./generated/graphql.tsx";
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          invoice: {
+            keyArgs: false,
+            merge(existing = [], incoming) {
+              return [...existing, ...incoming];
+            },
+          },
+        },
+      },
+    },
+  }),
   uri: import.meta.env.VITE_HASURA_URI,
   headers: {
     "x-hasura-admin-secret": import.meta.env.VITE_HASURA_KEY,
