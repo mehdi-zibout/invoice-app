@@ -10,7 +10,7 @@ export const router = createBrowserRouter([
     element: <Root />,
     children: [
       { path: "/", element: <Homepage /> },
-      { path: ":invoiceId", element: <InvoiceDetails /> },
+      { path: "/invoice/:invoiceId", element: <InvoiceDetails /> },
     ],
   },
   // { path: ":invoiceId", element: <InvoiceDetails /> },

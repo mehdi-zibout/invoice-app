@@ -166,7 +166,9 @@ export default function Topbar({ filterBy, setFilterBy }: TopBarProps) {
                       Discard
                     </Button>
                     <div className="space-x-2">
-                      <Button variant="tertiary">Save as Draft</Button>
+                      <button type="submit" form="draft-form">
+                        Save as Draft
+                      </button>
 
                       <button
                         type="submit"

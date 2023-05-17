@@ -1,21 +1,21 @@
-import { Button as AriaButton } from "react-aria-components";
+import {
+  Button as AriaButton,
+  Dialog,
+  DialogTrigger,
+  Modal,
+} from "react-aria-components";
 import { useNavigate, useParams } from "react-router-dom";
 import Card from "../../components/Card";
 import InvoiceStatus from "../../components/InvoiceStatus";
 import {
-  Invoice_Status_Enum,
   Payment_Terms_Enum,
   useInvoiceByIdQuery,
 } from "../../generated/graphql";
 import Button from "../../components/Button";
 import { ReactComponent as NoInvoices } from "../../assets/no-invoices.svg";
 import { dateFormatter, numberFormatter } from "../../utils/formatters";
-import {
-  CalendarDate,
-  getLocalTimeZone,
-  parseDate,
-} from "@internationalized/date";
-import { NumberFormatter } from "@internationalized/number";
+import { getLocalTimeZone, parseDate } from "@internationalized/date";
+import UpsertInvoice from "../home/UpsertInvoice";
 
 export default function InvoiceDetails() {
   const { invoiceId } = useParams();
@@ -24,6 +24,7 @@ export default function InvoiceDetails() {
     variables: { id: invoiceId },
   });
   const invoice = data?.invoice_by_pk;
+  console.log(invoice);
   return (
     <main className="px-6 py-9 md:px-12 md:py-16">
       <AriaButton
@@ -67,7 +68,45 @@ export default function InvoiceDetails() {
               <InvoiceStatus className="px-4" status={invoice.status} />
             </div>
             <div className="space-x-2">
-              <Button variant="secondary">Edit</Button>
+              <DialogTrigger>
+                <Button variant="secondary">Edit</Button>
+
+                <Modal className="w-screen animate-in fade-in  duration-500 bg-black bg-opacity-50 fixed inset-0">
+                  <Dialog
+                    className="animate-in slide-in-from-left   duration-500 outline-none  overflow-hidden bg-white md:rounded-r-[20px] h-screen  w-screen absolute left-0 top-0 md:w-[615px] xl:w-[719px] pt-[72px] lg:pt-0 lg:pl-[103px]"
+                    role="dialog"
+                  >
+                    {({ close }) => (
+                      <div className="relative h-full">
+                        <UpsertInvoice editInvoice={invoice} />
+                        <div
+                          className="w-full  h-48 absolute bottom-12 "
+                          style={{
+                            background: `linear-gradient(180deg, rgba(0, 0, 0,
+                    0.0001) 0%, rgba(0, 0, 0, 0.1) 100%)`,
+                          }}
+                        ></div>
+                        <div className="absolute bottom-0 h-[105px] z-20 flex justify-between items-center w-full  rounded-t-[20px] py-8 px-14 bg-white">
+                          <Button variant="secondary" onPress={() => close()}>
+                            Discard
+                          </Button>
+                          <div className="space-x-2">
+                            <Button variant="tertiary">Save as Draft</Button>
+
+                            <button
+                              type="submit"
+                              form="invoice-form"
+                              className="px-6 pt-[18px] pb-[15px] text-hsv transition duration-300 rounded-full bg-purple-400 text-white hover:bg-purple-300"
+                            >
+                              Save & Send
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Dialog>
+                </Modal>
+              </DialogTrigger>
               <Button variant="destructive">Delete</Button>
               <Button variant="primary">Mark as Paid</Button>
             </div>
@@ -84,10 +123,10 @@ export default function InvoiceDetails() {
                 </p>
               </div>
               <ul className="dark:text-gray-200 text-purple-200 text-body text-right">
-                <li>{invoice.bill_from.street_address}</li>
-                <li>{invoice.bill_from.city}</li>
-                <li>{invoice.bill_from.post_code}</li>
-                <li>{invoice.bill_from.country}</li>
+                <li>{invoice.bill_from_address?.street_address}</li>
+                <li>{invoice.bill_from_address?.city}</li>
+                <li>{invoice.bill_from_address?.post_code}</li>
+                <li>{invoice.bill_from_address?.country}</li>
               </ul>
             </div>
             <div className="grid grid-cols-3 mt-3">
@@ -96,17 +135,20 @@ export default function InvoiceDetails() {
                   Invoice Date
                 </p>
                 <p className="dark:text-white text-purple-800 text-hs">
-                  {dateFormatter.format(new Date(invoice.invoice_date))}
+                  {dateFormatter.format(new Date(invoice.date))}
                 </p>
                 <p className="text-purple-200 dark:text-gray-200 text-body mt-8 mb-3">
                   Payment Due
                 </p>
                 <p className="dark:text-white text-purple-800 text-hs">
-                  {dateFormatter.format(
-                    parseDate(invoice.invoice_date)
-                      .add({ days: getPaymentTermsDays(invoice.payment_terms) })
-                      .toDate(getLocalTimeZone())
-                  )}
+                  {invoice.payment_terms &&
+                    dateFormatter.format(
+                      parseDate(invoice.date)
+                        .add({
+                          days: getPaymentTermsDays(invoice?.payment_terms),
+                        })
+                        .toDate(getLocalTimeZone())
+                    )}
                 </p>
               </section>
               <section className="">
@@ -146,8 +188,8 @@ export default function InvoiceDetails() {
                 Total
               </p>
               <ul className="col-span-9 space-y-8 mt-8">
-                {invoice.invoice_items.map((item) => (
-                  <li key={item.id} className="grid grid-cols-9">
+                {invoice.items.map((item) => (
+                  <li key={item.itemId} className="grid grid-cols-9">
                     <p className="dark:text-white text-purple-800 text-hs col-span-4">
                       {item.name}
                     </p>
@@ -158,9 +200,7 @@ export default function InvoiceDetails() {
                       {item.price}
                     </p>
                     <p className="dark:text-white text-purple-800 text-hs col-span-2 text-right">
-                      {numberFormatter.format(
-                        item.quantity * +`${item.price}`.slice(1)
-                      )}
+                      {numberFormatter.format(item.total)}
                     </p>
                   </li>
                 ))}
@@ -170,10 +210,7 @@ export default function InvoiceDetails() {
               <p className="text-body text-white">Amount Due</p>
               <p className="text-hm text-white">
                 {numberFormatter.format(
-                  invoice.invoice_items.reduce(
-                    (p, c) => p + +`${c.price}`.slice(1) * c.quantity,
-                    0
-                  )
+                  invoice.items.reduce((p, c) => p + c.total, 0)
                 )}
               </p>
             </div>

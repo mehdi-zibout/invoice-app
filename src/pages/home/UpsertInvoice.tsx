@@ -9,128 +9,122 @@ import {
   useFieldArray,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getLocalTimeZone } from "@internationalized/date";
+import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
 import Button from "../../components/Button";
 import {
+  Address_Constraint,
+  Address_Update_Column,
   Invoice_Constraint,
-  Invoice_FieldsFragmentDoc,
   Invoice_Status_Enum,
+  Invoice_Update_Column,
   InvoicesDocument,
   InvoicesTotalDocument,
+  Item_Constraint,
+  Item_Update_Column,
+  Order_By,
   Payment_Terms_Enum,
+  useDeleteItemMutation,
   useUpsertInvoiceMutation,
 } from "../../generated/graphql";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
-const paymentTermsSchema = z.enum(["Net1", "Net7", "Net14", "Net30"]);
-const invoiceSchema = z.object({
-  street_address_from: z.string().min(1, "Street address is required"),
-  city_from: z.string().min(1, "City is required"),
-  post_code_from: z.string().min(1, "Post Code is required"),
-  country_from: z.string().min(1, "Country is required"),
-  client_name: z.string().min(1, "Client's name is required"),
-  client_email: z.string().email("Invalid email").min(1, "Email is required"),
+const paymentTermsSchema = z.nativeEnum(Payment_Terms_Enum);
+
+const addressSchema = z.object({
+  id: z.string().uuid().optional(),
   street_address: z.string().min(1, "Street address is required"),
   city: z.string().min(1, "City is required"),
   post_code: z.string().min(1, "Post Code is required"),
-  country: z.string().min(1, "Post Code is required"),
+  country: z.string().min(1, "Country is required"),
+});
+
+const itemSchema = z.object({
+  itemId: z.string().uuid().optional(),
+  name: z.string().min(1, "Item's name is required"),
+  quantity: z.number().min(1, "Quantity is required"),
+  price: z.number().min(0, "Price is required"),
+});
+
+const invoiceSchema = z.object({
+  id: z.string().uuid().optional(),
+  client_name: z.string().min(1, "Client's name is required"),
+  client_email: z.string().email("Invalid email").min(1, "Email is required"),
   project_description: z.string(),
-  invoice_date: z.date({
+  payment_terms: paymentTermsSchema,
+  date: z.date({
     required_error: "Please select a date and time",
     invalid_type_error: "That's not a date!",
   }),
-  payment_terms: paymentTermsSchema,
-  items: z.array(
-    z.object({
-      name: z.string().min(1, "Item's name is required"),
-      quantity: z.number().min(1, "Quantity is required"),
-      price: z.number().min(0, "Price is required"),
-    })
-  ),
+  items: z.array(itemSchema),
+  bill_from_address: addressSchema,
+  client_address: addressSchema,
 });
 
 type InvoiceType = z.infer<typeof invoiceSchema>;
 
 const PAYMENT_TERMS = [
-  { id: "Net1", name: "Net 1 Day" },
-  { id: "Net7", name: "Net 7 Days" },
-  { id: "Net14", name: "Net 14 Days" },
-  { id: "Net30", name: "Net 30 Days" },
+  { id: Payment_Terms_Enum.Net1, name: "Net 1 Day" },
+  { id: Payment_Terms_Enum.Net7, name: "Net 7 Days" },
+  { id: Payment_Terms_Enum.Net14, name: "Net 14 Days" },
+  { id: Payment_Terms_Enum.Net30, name: "Net 30 Days" },
 ];
 
-export default function CreateEditInvoice() {
+export default function CreateEditInvoice({
+  editInvoice,
+}: {
+  editInvoice?: InvoiceType & { id: string };
+}) {
+  const navigate = useNavigate();
+  const [deletedItemsId, setDeletedItemsId] = useState<string[]>([]);
+  const [deleteItem] = useDeleteItemMutation();
   const [upsertInvoice] = useUpsertInvoiceMutation({
-    update: (cache, { data }) => {
-      try {
-        cache.updateQuery(
-          {
-            query: InvoicesDocument,
-            variables: {
-              where: {
-                status: { _in: ["DRAFT", "PENDING", "PAID"] },
+    update: editInvoice
+      ? undefined
+      : (cache, { data }) => {
+          cache.updateQuery(
+            {
+              query: InvoicesDocument,
+              variables: {
+                where: {
+                  status: { _in: ["DRAFT", "PENDING", "PAID"] },
+                },
+                order_by: {
+                  updated_at: Order_By.Desc,
+                },
               },
             },
-          },
-          ({ invoice }) => ({ invoice: [...invoice, data?.insert_invoice_one] })
-        );
-        cache.updateQuery(
-          {
-            query: InvoicesTotalDocument,
-            variables: {
-              where: {
-                status: { _in: ["DRAFT", "PENDING", "PAID"] },
+            ({ invoice }) => ({
+              invoice: [data?.insert_invoice_one, ...invoice],
+            })
+          );
+          cache.updateQuery(
+            {
+              query: InvoicesTotalDocument,
+              variables: {
+                where: {
+                  status: { _in: ["DRAFT", "PENDING", "PAID"] },
+                },
               },
             },
-          },
-          (countData) => ({
-            invoice_aggregate: {
-              aggregate: {
-                count: countData.invoice_aggregate.aggregate.count + 1,
+            (countData) => ({
+              invoice_aggregate: {
+                aggregate: {
+                  count: countData.invoice_aggregate.aggregate.count + 1,
+                },
               },
-            },
-          })
-        );
-        // cache.updateQuery(
-        //   {
-        //     query: InvoicesDocument,
-        //     variables: {
-        //       where: {
-        //         status: { _in: ["DRAFT", "PENDING"] },
-        //       },
-        //     },
-        //   },
-        //   ({ invoice }) => ({ invoice: [...invoice, data?.insert_invoice_one] })
-        // );
-        // cache.updateQuery(
-        //   {
-        //     query: InvoicesDocument,
-        //     variables: {
-        //       where: {
-        //         status: { _in: ["PENDING", "PAID"] },
-        //       },
-        //     },
-        //   },
-        //   ({ invoice }) => ({ invoice: [...invoice, data?.insert_invoice_one] })
-        // );
-        // cache.updateQuery(
-        //   {
-        //     query: InvoicesDocument,
-        //     variables: {
-        //       where: {
-        //         status: { _in: ["PENDING"] },
-        //       },
-        //     },
-        //   },
-        //   ({ invoice }) => ({ invoice: [...invoice, data?.insert_invoice_one] })
-        // );
-      } catch (err) {
-        console.log(err);
-      }
+            })
+          );
+        },
+    onCompleted: (data) => {
+      navigate(`/invoice/${data.insert_invoice_one?.id}`);
     },
     onQueryUpdated(observableQuery) {
       return observableQuery.refetch();
     },
   });
   const {
+    getValues,
     control,
     register,
     handleSubmit,
@@ -138,6 +132,9 @@ export default function CreateEditInvoice() {
     watch,
   } = useForm<InvoiceType>({
     defaultValues: {
+      ...editInvoice,
+      date: editInvoice && new Date(editInvoice?.date as unknown as string),
+    } || {
       items: [
         {
           name: "",
@@ -149,64 +146,85 @@ export default function CreateEditInvoice() {
     resolver: zodResolver(invoiceSchema),
   });
   const onSubmit: SubmitHandler<InvoiceType> = ({
-    client_name,
-    client_email,
-    city,
-    city_from,
-    country,
-    country_from,
-    invoice_date,
+    client_address,
+    bill_from_address,
     items,
-    payment_terms,
-    post_code,
-    post_code_from,
-    project_description,
-    street_address,
-    street_address_from,
+    ...data
   }) => {
     upsertInvoice({
       variables: {
         object: {
-          status: Invoice_Status_Enum.Pending,
-          client_name,
-          client_email,
-          project_description,
-          invoice_date,
-          payment_terms: Payment_Terms_Enum[payment_terms],
+          ...data,
           client_address: {
-            data: {
-              city,
-              country,
-              post_code,
-              street_address,
+            data: client_address,
+            on_conflict: {
+              constraint: Address_Constraint.AddressPkey,
+              update_columns: [
+                Address_Update_Column.City,
+                Address_Update_Column.Country,
+                Address_Update_Column.PostCode,
+                Address_Update_Column.StreetAddress,
+              ],
             },
           },
-          bill_from: {
-            data: {
-              city: city_from,
-              country: country_from,
-              post_code: post_code_from,
-              street_address: street_address_from,
+          bill_from_address: {
+            data: bill_from_address,
+            on_conflict: {
+              constraint: Address_Constraint.AddressPkey,
+              update_columns: [
+                Address_Update_Column.City,
+                Address_Update_Column.Country,
+                Address_Update_Column.PostCode,
+                Address_Update_Column.StreetAddress,
+              ],
             },
           },
-          invoice_items: {
-            data: items,
+          items: {
+            data: items.map((item) => ({
+              id: item.itemId,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+            })),
+            on_conflict: {
+              constraint: Item_Constraint.ItemPkey,
+              update_columns: [
+                Item_Update_Column.Name,
+                Item_Update_Column.Price,
+                Item_Update_Column.Quantity,
+              ],
+            },
           },
+          status: Invoice_Status_Enum.Pending,
         },
         on_conflict: {
           constraint: Invoice_Constraint.InvoicePkey,
-          update_columns: [],
+          update_columns: [
+            Invoice_Update_Column.ClientName,
+            Invoice_Update_Column.ClientEmail,
+            Invoice_Update_Column.Date,
+            Invoice_Update_Column.ProjectDescription,
+            Invoice_Update_Column.PaymentTerms,
+            Invoice_Update_Column.Status,
+          ],
         },
       },
+    }).then(() => {
+      if (deletedItemsId.length > 0)
+        deleteItem({
+          variables: {
+            where: {
+              id: { _in: deletedItemsId },
+            },
+          },
+        });
     });
   };
 
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
-    {
-      control,
-      name: "items",
-    }
-  );
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "items",
+  });
 
   return (
     <div className="py-14 pl-14 pr-6 relative z-10 ">
@@ -223,27 +241,27 @@ export default function CreateEditInvoice() {
           <Input
             label="Street Address"
             className="w-full "
-            {...register("street_address_from")}
-            error={errors.street_address_from?.message}
+            {...register("bill_from_address.street_address")}
+            error={errors.bill_from_address?.street_address?.message}
           />
           <div className="grid grid-cols-3 gap-x-6 mt-5">
             <Input
               label="City"
               className="w-full "
-              {...register("city_from")}
-              error={errors.city_from?.message}
+              {...register("bill_from_address.city")}
+              error={errors.bill_from_address?.city?.message}
             />
             <Input
               label="Post Code"
               className="w-full "
-              {...register("post_code_from")}
-              error={errors.post_code_from?.message}
+              {...register("bill_from_address.post_code")}
+              error={errors.bill_from_address?.post_code?.message}
             />
             <Input
               label="Country"
               className="w-full "
-              {...register("country_from")}
-              error={errors.country_from?.message}
+              {...register("bill_from_address.country")}
+              error={errors.bill_from_address?.country?.message}
             />
           </div>
         </section>
@@ -264,36 +282,47 @@ export default function CreateEditInvoice() {
           <Input
             label="Street Address"
             className="w-full "
-            {...register("street_address")}
-            error={errors.street_address?.message}
+            {...register("client_address.street_address")}
+            error={errors.client_address?.street_address?.message}
           />
 
           <div className="grid grid-cols-3 gap-x-6">
             <Input
               label="City"
               className="w-full "
-              {...register("city")}
-              error={errors.city?.message}
+              {...register("client_address.city")}
+              error={errors?.client_address?.city?.message}
             />
             <Input
               label="Post Code"
               className="w-full "
-              {...register("post_code")}
-              error={errors.post_code?.message}
+              {...register("client_address.post_code")}
+              error={errors.client_address?.post_code?.message}
             />
             <Input
               label="Country"
               className="w-full "
-              {...register("country")}
-              error={errors.country?.message}
+              {...register("client_address.country")}
+              error={errors.client_address?.country?.message}
             />
           </div>
           <div className="grid grid-cols-2 gap-x-6">
             <Controller
               control={control}
-              name="invoice_date"
-              render={({ field: { onChange }, fieldState: { error } }) => (
+              name="date"
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
                 <DatePicker
+                  defaultValue={
+                    value &&
+                    new CalendarDate(
+                      value.getFullYear(),
+                      value.getMonth() + 1,
+                      value.getDate()
+                    )
+                  }
                   label="Invoice Date"
                   error={error?.message}
                   onChange={(value) =>
@@ -319,9 +348,9 @@ export default function CreateEditInvoice() {
               </div>
               <Controller
                 name="payment_terms"
-                render={({ field: { onChange } }) => (
+                render={({ field: { onChange, value } }) => (
                   <MySelect
-                    defaultSelectedKey="NET1"
+                    defaultSelectedKey={value}
                     onSelectionChange={(key) => {
                       onChange(key);
                     }}
@@ -417,7 +446,15 @@ export default function CreateEditInvoice() {
                   <p className="col-span-1 text-hsv text-purple-100 text-center">
                     {isNaN(total) ? "-" : total}
                   </p>
-                  <button className="col-span-1" onClick={() => remove(index)}>
+                  <button
+                    className="col-span-1"
+                    onClick={() => {
+                      remove(index);
+                      if (editInvoice && field.itemId) {
+                        setDeletedItemsId(deletedItemsId.concat(field.itemId));
+                      }
+                    }}
+                  >
                     <svg
                       aria-hidden="true"
                       width="13"
@@ -454,6 +491,35 @@ export default function CreateEditInvoice() {
           </Button>
         </section>
       </form>
+      <form
+        id="draft-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const { bill_from_address, client_address, items, ...data } =
+            getValues();
+          upsertInvoice({
+            variables: {
+              object: {
+                ...data,
+                bill_from_address: {
+                  data: bill_from_address,
+                },
+                client_address: {
+                  data: client_address,
+                },
+                items: {
+                  data: items,
+                },
+              },
+              on_conflict: {
+                constraint: Invoice_Constraint.InvoicePkey,
+                update_columns: [],
+              },
+            },
+          });
+        }}
+        className="hidden"
+      ></form>
     </div>
   );
 }

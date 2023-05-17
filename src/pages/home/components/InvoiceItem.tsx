@@ -36,7 +36,7 @@ export default function InvoiceItem({
           {numberFormatter.format(amount)}
         </p>
         <InvoiceStatus status={status} className="col-span-3" />
-        <Link to={`/${id}`} className="flex justify-end">
+        <Link to={`/invoice/${id}`} className="flex justify-end">
           <svg
             aria-hidden="true"
             width="7"

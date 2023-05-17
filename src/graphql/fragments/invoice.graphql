@@ -5,17 +5,17 @@ fragment INVOICE_FIELDS on invoice {
   id
   client_name
   client_email
-  invoice_date
+  date
   status
   project_description
   payment_terms
   client_address {
     ...ADDRESS_FIELDS
   }
-  bill_from {
+  bill_from_address {
     ...ADDRESS_FIELDS
   }
-  invoice_items {
+  items {
     ...ITEM_FIELDS
   }
 }

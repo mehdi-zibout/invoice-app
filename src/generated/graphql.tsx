@@ -14,7 +14,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   date: any;
-  money: any;
+  numeric: any;
   smallint: any;
   timestamptz: any;
   uuid: any;
@@ -292,21 +292,21 @@ export type Date_Comparison_Exp = {
 export type Invoice = {
   __typename?: 'invoice';
   /** An object relationship */
-  bill_from: Address;
-  bill_from_id: Scalars['uuid'];
+  bill_from_address?: Maybe<Address>;
+  bill_from_address_id?: Maybe<Scalars['uuid']>;
   /** An object relationship */
   client_address?: Maybe<Address>;
-  client_address_id: Scalars['uuid'];
-  client_email: Scalars['String'];
+  client_address_id?: Maybe<Scalars['uuid']>;
+  client_email?: Maybe<Scalars['String']>;
   client_name?: Maybe<Scalars['String']>;
   created_at: Scalars['timestamptz'];
+  date?: Maybe<Scalars['date']>;
   id: Scalars['uuid'];
-  invoice_date: Scalars['date'];
   /** An array relationship */
-  invoice_items: Array<Item>;
+  items: Array<Item>;
   /** An aggregate relationship */
-  invoice_items_aggregate: Item_Aggregate;
-  payment_terms: Payment_Terms_Enum;
+  items_aggregate: Item_Aggregate;
+  payment_terms?: Maybe<Payment_Terms_Enum>;
   project_description?: Maybe<Scalars['String']>;
   status: Invoice_Status_Enum;
   updated_at: Scalars['timestamptz'];
@@ -314,7 +314,7 @@ export type Invoice = {
 
 
 /** columns and relationships of "invoice" */
-export type InvoiceInvoice_ItemsArgs = {
+export type InvoiceItemsArgs = {
   distinct_on?: InputMaybe<Array<Item_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -324,7 +324,7 @@ export type InvoiceInvoice_ItemsArgs = {
 
 
 /** columns and relationships of "invoice" */
-export type InvoiceInvoice_Items_AggregateArgs = {
+export type InvoiceItems_AggregateArgs = {
   distinct_on?: InputMaybe<Array<Item_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -359,17 +359,17 @@ export type Invoice_Bool_Exp = {
   _and?: InputMaybe<Array<Invoice_Bool_Exp>>;
   _not?: InputMaybe<Invoice_Bool_Exp>;
   _or?: InputMaybe<Array<Invoice_Bool_Exp>>;
-  bill_from?: InputMaybe<Address_Bool_Exp>;
-  bill_from_id?: InputMaybe<Uuid_Comparison_Exp>;
+  bill_from_address?: InputMaybe<Address_Bool_Exp>;
+  bill_from_address_id?: InputMaybe<Uuid_Comparison_Exp>;
   client_address?: InputMaybe<Address_Bool_Exp>;
   client_address_id?: InputMaybe<Uuid_Comparison_Exp>;
   client_email?: InputMaybe<String_Comparison_Exp>;
   client_name?: InputMaybe<String_Comparison_Exp>;
   created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  date?: InputMaybe<Date_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
-  invoice_date?: InputMaybe<Date_Comparison_Exp>;
-  invoice_items?: InputMaybe<Item_Bool_Exp>;
-  invoice_items_aggregate?: InputMaybe<Item_Aggregate_Bool_Exp>;
+  items?: InputMaybe<Item_Bool_Exp>;
+  items_aggregate?: InputMaybe<Item_Aggregate_Bool_Exp>;
   payment_terms?: InputMaybe<Payment_Terms_Enum_Comparison_Exp>;
   project_description?: InputMaybe<String_Comparison_Exp>;
   status?: InputMaybe<Invoice_Status_Enum_Comparison_Exp>;
@@ -384,16 +384,16 @@ export enum Invoice_Constraint {
 
 /** input type for inserting data into table "invoice" */
 export type Invoice_Insert_Input = {
-  bill_from?: InputMaybe<Address_Obj_Rel_Insert_Input>;
-  bill_from_id?: InputMaybe<Scalars['uuid']>;
+  bill_from_address?: InputMaybe<Address_Obj_Rel_Insert_Input>;
+  bill_from_address_id?: InputMaybe<Scalars['uuid']>;
   client_address?: InputMaybe<Address_Obj_Rel_Insert_Input>;
   client_address_id?: InputMaybe<Scalars['uuid']>;
   client_email?: InputMaybe<Scalars['String']>;
   client_name?: InputMaybe<Scalars['String']>;
   created_at?: InputMaybe<Scalars['timestamptz']>;
+  date?: InputMaybe<Scalars['date']>;
   id?: InputMaybe<Scalars['uuid']>;
-  invoice_date?: InputMaybe<Scalars['date']>;
-  invoice_items?: InputMaybe<Item_Arr_Rel_Insert_Input>;
+  items?: InputMaybe<Item_Arr_Rel_Insert_Input>;
   payment_terms?: InputMaybe<Payment_Terms_Enum>;
   project_description?: InputMaybe<Scalars['String']>;
   status?: InputMaybe<Invoice_Status_Enum>;
@@ -403,13 +403,13 @@ export type Invoice_Insert_Input = {
 /** aggregate max on columns */
 export type Invoice_Max_Fields = {
   __typename?: 'invoice_max_fields';
-  bill_from_id?: Maybe<Scalars['uuid']>;
+  bill_from_address_id?: Maybe<Scalars['uuid']>;
   client_address_id?: Maybe<Scalars['uuid']>;
   client_email?: Maybe<Scalars['String']>;
   client_name?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
+  date?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['uuid']>;
-  invoice_date?: Maybe<Scalars['date']>;
   project_description?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
 };
@@ -417,13 +417,13 @@ export type Invoice_Max_Fields = {
 /** aggregate min on columns */
 export type Invoice_Min_Fields = {
   __typename?: 'invoice_min_fields';
-  bill_from_id?: Maybe<Scalars['uuid']>;
+  bill_from_address_id?: Maybe<Scalars['uuid']>;
   client_address_id?: Maybe<Scalars['uuid']>;
   client_email?: Maybe<Scalars['String']>;
   client_name?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
+  date?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['uuid']>;
-  invoice_date?: Maybe<Scalars['date']>;
   project_description?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
 };
@@ -446,16 +446,16 @@ export type Invoice_On_Conflict = {
 
 /** Ordering options when selecting data from "invoice". */
 export type Invoice_Order_By = {
-  bill_from?: InputMaybe<Address_Order_By>;
-  bill_from_id?: InputMaybe<Order_By>;
+  bill_from_address?: InputMaybe<Address_Order_By>;
+  bill_from_address_id?: InputMaybe<Order_By>;
   client_address?: InputMaybe<Address_Order_By>;
   client_address_id?: InputMaybe<Order_By>;
   client_email?: InputMaybe<Order_By>;
   client_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
+  date?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  invoice_date?: InputMaybe<Order_By>;
-  invoice_items_aggregate?: InputMaybe<Item_Aggregate_Order_By>;
+  items_aggregate?: InputMaybe<Item_Aggregate_Order_By>;
   payment_terms?: InputMaybe<Order_By>;
   project_description?: InputMaybe<Order_By>;
   status?: InputMaybe<Order_By>;
@@ -470,7 +470,7 @@ export type Invoice_Pk_Columns_Input = {
 /** select columns of table "invoice" */
 export enum Invoice_Select_Column {
   /** column name */
-  BillFromId = 'bill_from_id',
+  BillFromAddressId = 'bill_from_address_id',
   /** column name */
   ClientAddressId = 'client_address_id',
   /** column name */
@@ -480,9 +480,9 @@ export enum Invoice_Select_Column {
   /** column name */
   CreatedAt = 'created_at',
   /** column name */
-  Id = 'id',
+  Date = 'date',
   /** column name */
-  InvoiceDate = 'invoice_date',
+  Id = 'id',
   /** column name */
   PaymentTerms = 'payment_terms',
   /** column name */
@@ -495,13 +495,13 @@ export enum Invoice_Select_Column {
 
 /** input type for updating data in table "invoice" */
 export type Invoice_Set_Input = {
-  bill_from_id?: InputMaybe<Scalars['uuid']>;
+  bill_from_address_id?: InputMaybe<Scalars['uuid']>;
   client_address_id?: InputMaybe<Scalars['uuid']>;
   client_email?: InputMaybe<Scalars['String']>;
   client_name?: InputMaybe<Scalars['String']>;
   created_at?: InputMaybe<Scalars['timestamptz']>;
+  date?: InputMaybe<Scalars['date']>;
   id?: InputMaybe<Scalars['uuid']>;
-  invoice_date?: InputMaybe<Scalars['date']>;
   payment_terms?: InputMaybe<Payment_Terms_Enum>;
   project_description?: InputMaybe<Scalars['String']>;
   status?: InputMaybe<Invoice_Status_Enum>;
@@ -655,13 +655,13 @@ export type Invoice_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Invoice_Stream_Cursor_Value_Input = {
-  bill_from_id?: InputMaybe<Scalars['uuid']>;
+  bill_from_address_id?: InputMaybe<Scalars['uuid']>;
   client_address_id?: InputMaybe<Scalars['uuid']>;
   client_email?: InputMaybe<Scalars['String']>;
   client_name?: InputMaybe<Scalars['String']>;
   created_at?: InputMaybe<Scalars['timestamptz']>;
+  date?: InputMaybe<Scalars['date']>;
   id?: InputMaybe<Scalars['uuid']>;
-  invoice_date?: InputMaybe<Scalars['date']>;
   payment_terms?: InputMaybe<Payment_Terms_Enum>;
   project_description?: InputMaybe<Scalars['String']>;
   status?: InputMaybe<Invoice_Status_Enum>;
@@ -671,7 +671,7 @@ export type Invoice_Stream_Cursor_Value_Input = {
 /** update columns of table "invoice" */
 export enum Invoice_Update_Column {
   /** column name */
-  BillFromId = 'bill_from_id',
+  BillFromAddressId = 'bill_from_address_id',
   /** column name */
   ClientAddressId = 'client_address_id',
   /** column name */
@@ -681,9 +681,9 @@ export enum Invoice_Update_Column {
   /** column name */
   CreatedAt = 'created_at',
   /** column name */
-  Id = 'id',
+  Date = 'date',
   /** column name */
-  InvoiceDate = 'invoice_date',
+  Id = 'id',
   /** column name */
   PaymentTerms = 'payment_terms',
   /** column name */
@@ -706,10 +706,11 @@ export type Item = {
   __typename?: 'item';
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
-  invoice_id: Scalars['uuid'];
-  name: Scalars['String'];
-  price: Scalars['money'];
-  quantity: Scalars['smallint'];
+  invoice_id?: Maybe<Scalars['uuid']>;
+  name?: Maybe<Scalars['String']>;
+  price?: Maybe<Scalars['numeric']>;
+  quantity?: Maybe<Scalars['smallint']>;
+  total?: Maybe<Scalars['numeric']>;
   updated_at: Scalars['timestamptz'];
 };
 
@@ -781,12 +782,14 @@ export type Item_Avg_Fields = {
   __typename?: 'item_avg_fields';
   price?: Maybe<Scalars['Float']>;
   quantity?: Maybe<Scalars['Float']>;
+  total?: Maybe<Scalars['Float']>;
 };
 
 /** order by avg() on columns of table "item" */
 export type Item_Avg_Order_By = {
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "item". All fields are combined with a logical 'AND'. */
@@ -798,8 +801,9 @@ export type Item_Bool_Exp = {
   id?: InputMaybe<Uuid_Comparison_Exp>;
   invoice_id?: InputMaybe<Uuid_Comparison_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
-  price?: InputMaybe<Money_Comparison_Exp>;
+  price?: InputMaybe<Numeric_Comparison_Exp>;
   quantity?: InputMaybe<Smallint_Comparison_Exp>;
+  total?: InputMaybe<Numeric_Comparison_Exp>;
   updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
 };
 
@@ -811,7 +815,7 @@ export enum Item_Constraint {
 
 /** input type for incrementing numeric columns in table "item" */
 export type Item_Inc_Input = {
-  price?: InputMaybe<Scalars['money']>;
+  price?: InputMaybe<Scalars['numeric']>;
   quantity?: InputMaybe<Scalars['smallint']>;
 };
 
@@ -821,7 +825,7 @@ export type Item_Insert_Input = {
   id?: InputMaybe<Scalars['uuid']>;
   invoice_id?: InputMaybe<Scalars['uuid']>;
   name?: InputMaybe<Scalars['String']>;
-  price?: InputMaybe<Scalars['money']>;
+  price?: InputMaybe<Scalars['numeric']>;
   quantity?: InputMaybe<Scalars['smallint']>;
   updated_at?: InputMaybe<Scalars['timestamptz']>;
 };
@@ -833,8 +837,9 @@ export type Item_Max_Fields = {
   id?: Maybe<Scalars['uuid']>;
   invoice_id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
-  price?: Maybe<Scalars['money']>;
+  price?: Maybe<Scalars['numeric']>;
   quantity?: Maybe<Scalars['smallint']>;
+  total?: Maybe<Scalars['numeric']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
 };
 
@@ -846,6 +851,7 @@ export type Item_Max_Order_By = {
   name?: InputMaybe<Order_By>;
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
 };
 
@@ -856,8 +862,9 @@ export type Item_Min_Fields = {
   id?: Maybe<Scalars['uuid']>;
   invoice_id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
-  price?: Maybe<Scalars['money']>;
+  price?: Maybe<Scalars['numeric']>;
   quantity?: Maybe<Scalars['smallint']>;
+  total?: Maybe<Scalars['numeric']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
 };
 
@@ -869,6 +876,7 @@ export type Item_Min_Order_By = {
   name?: InputMaybe<Order_By>;
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
 };
 
@@ -896,6 +904,7 @@ export type Item_Order_By = {
   name?: InputMaybe<Order_By>;
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
 };
 
@@ -919,6 +928,8 @@ export enum Item_Select_Column {
   /** column name */
   Quantity = 'quantity',
   /** column name */
+  Total = 'total',
+  /** column name */
   UpdatedAt = 'updated_at'
 }
 
@@ -928,7 +939,7 @@ export type Item_Set_Input = {
   id?: InputMaybe<Scalars['uuid']>;
   invoice_id?: InputMaybe<Scalars['uuid']>;
   name?: InputMaybe<Scalars['String']>;
-  price?: InputMaybe<Scalars['money']>;
+  price?: InputMaybe<Scalars['numeric']>;
   quantity?: InputMaybe<Scalars['smallint']>;
   updated_at?: InputMaybe<Scalars['timestamptz']>;
 };
@@ -938,12 +949,14 @@ export type Item_Stddev_Fields = {
   __typename?: 'item_stddev_fields';
   price?: Maybe<Scalars['Float']>;
   quantity?: Maybe<Scalars['Float']>;
+  total?: Maybe<Scalars['Float']>;
 };
 
 /** order by stddev() on columns of table "item" */
 export type Item_Stddev_Order_By = {
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
@@ -951,12 +964,14 @@ export type Item_Stddev_Pop_Fields = {
   __typename?: 'item_stddev_pop_fields';
   price?: Maybe<Scalars['Float']>;
   quantity?: Maybe<Scalars['Float']>;
+  total?: Maybe<Scalars['Float']>;
 };
 
 /** order by stddev_pop() on columns of table "item" */
 export type Item_Stddev_Pop_Order_By = {
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
@@ -964,12 +979,14 @@ export type Item_Stddev_Samp_Fields = {
   __typename?: 'item_stddev_samp_fields';
   price?: Maybe<Scalars['Float']>;
   quantity?: Maybe<Scalars['Float']>;
+  total?: Maybe<Scalars['Float']>;
 };
 
 /** order by stddev_samp() on columns of table "item" */
 export type Item_Stddev_Samp_Order_By = {
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "item" */
@@ -986,22 +1003,25 @@ export type Item_Stream_Cursor_Value_Input = {
   id?: InputMaybe<Scalars['uuid']>;
   invoice_id?: InputMaybe<Scalars['uuid']>;
   name?: InputMaybe<Scalars['String']>;
-  price?: InputMaybe<Scalars['money']>;
+  price?: InputMaybe<Scalars['numeric']>;
   quantity?: InputMaybe<Scalars['smallint']>;
+  total?: InputMaybe<Scalars['numeric']>;
   updated_at?: InputMaybe<Scalars['timestamptz']>;
 };
 
 /** aggregate sum on columns */
 export type Item_Sum_Fields = {
   __typename?: 'item_sum_fields';
-  price?: Maybe<Scalars['money']>;
+  price?: Maybe<Scalars['numeric']>;
   quantity?: Maybe<Scalars['smallint']>;
+  total?: Maybe<Scalars['numeric']>;
 };
 
 /** order by sum() on columns of table "item" */
 export type Item_Sum_Order_By = {
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "item" */
@@ -1036,12 +1056,14 @@ export type Item_Var_Pop_Fields = {
   __typename?: 'item_var_pop_fields';
   price?: Maybe<Scalars['Float']>;
   quantity?: Maybe<Scalars['Float']>;
+  total?: Maybe<Scalars['Float']>;
 };
 
 /** order by var_pop() on columns of table "item" */
 export type Item_Var_Pop_Order_By = {
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
@@ -1049,12 +1071,14 @@ export type Item_Var_Samp_Fields = {
   __typename?: 'item_var_samp_fields';
   price?: Maybe<Scalars['Float']>;
   quantity?: Maybe<Scalars['Float']>;
+  total?: Maybe<Scalars['Float']>;
 };
 
 /** order by var_samp() on columns of table "item" */
 export type Item_Var_Samp_Order_By = {
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
+  total?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
@@ -1062,25 +1086,14 @@ export type Item_Variance_Fields = {
   __typename?: 'item_variance_fields';
   price?: Maybe<Scalars['Float']>;
   quantity?: Maybe<Scalars['Float']>;
+  total?: Maybe<Scalars['Float']>;
 };
 
 /** order by variance() on columns of table "item" */
 export type Item_Variance_Order_By = {
   price?: InputMaybe<Order_By>;
   quantity?: InputMaybe<Order_By>;
-};
-
-/** Boolean expression to compare columns of type "money". All fields are combined with logical 'AND'. */
-export type Money_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['money']>;
-  _gt?: InputMaybe<Scalars['money']>;
-  _gte?: InputMaybe<Scalars['money']>;
-  _in?: InputMaybe<Array<Scalars['money']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']>;
-  _lt?: InputMaybe<Scalars['money']>;
-  _lte?: InputMaybe<Scalars['money']>;
-  _neq?: InputMaybe<Scalars['money']>;
-  _nin?: InputMaybe<Array<Scalars['money']>>;
+  total?: InputMaybe<Order_By>;
 };
 
 /** mutation root */
@@ -1388,6 +1401,19 @@ export type Mutation_RootUpdate_Payment_Terms_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Payment_Terms_ManyArgs = {
   updates: Array<Payment_Terms_Updates>;
+};
+
+/** Boolean expression to compare columns of type "numeric". All fields are combined with logical 'AND'. */
+export type Numeric_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['numeric']>;
+  _gt?: InputMaybe<Scalars['numeric']>;
+  _gte?: InputMaybe<Scalars['numeric']>;
+  _in?: InputMaybe<Array<Scalars['numeric']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']>;
+  _lt?: InputMaybe<Scalars['numeric']>;
+  _lte?: InputMaybe<Scalars['numeric']>;
+  _neq?: InputMaybe<Scalars['numeric']>;
+  _nin?: InputMaybe<Array<Scalars['numeric']>>;
 };
 
 /** column ordering options */
@@ -1928,9 +1954,9 @@ export type Uuid_Comparison_Exp = {
 
 export type Address_FieldsFragment = { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null };
 
-export type Invoice_FieldsFragment = { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, project_description?: string | null, payment_terms: Payment_Terms_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> };
+export type Invoice_FieldsFragment = { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> };
 
-export type Item_FieldsFragment = { __typename?: 'item', id: any, name: string, quantity: any, price: any };
+export type Item_FieldsFragment = { __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any };
 
 export type UpsertInvoiceMutationVariables = Exact<{
   object: Invoice_Insert_Input;
@@ -1938,7 +1964,14 @@ export type UpsertInvoiceMutationVariables = Exact<{
 }>;
 
 
-export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, project_description?: string | null, payment_terms: Payment_Terms_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> } | null };
+export type UpsertInvoiceMutation = { __typename?: 'mutation_root', insert_invoice_one?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> } | null };
+
+export type DeleteItemMutationVariables = Exact<{
+  where: Item_Bool_Exp;
+}>;
+
+
+export type DeleteItemMutation = { __typename?: 'mutation_root', delete_item?: { __typename?: 'item_mutation_response', affected_rows: number } | null };
 
 export type InvoicesQueryVariables = Exact<{
   where?: InputMaybe<Invoice_Bool_Exp>;
@@ -1949,7 +1982,7 @@ export type InvoicesQueryVariables = Exact<{
 }>;
 
 
-export type InvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, project_description?: string | null, payment_terms: Payment_Terms_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> }> };
+export type InvoicesQuery = { __typename?: 'query_root', invoice: Array<{ __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> }> };
 
 export type InvoicesTotalQueryVariables = Exact<{
   distinct_on?: InputMaybe<Array<Invoice_Select_Column> | Invoice_Select_Column>;
@@ -1967,7 +2000,7 @@ export type InvoiceByIdQueryVariables = Exact<{
 }>;
 
 
-export type InvoiceByIdQuery = { __typename?: 'query_root', invoice_by_pk?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email: string, invoice_date: any, status: Invoice_Status_Enum, project_description?: string | null, payment_terms: Payment_Terms_Enum, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null }, invoice_items: Array<{ __typename?: 'item', id: any, name: string, quantity: any, price: any }> } | null };
+export type InvoiceByIdQuery = { __typename?: 'query_root', invoice_by_pk?: { __typename?: 'invoice', id: any, client_name?: string | null, client_email?: string | null, date?: any | null, status: Invoice_Status_Enum, project_description?: string | null, payment_terms?: Payment_Terms_Enum | null, client_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, bill_from_address?: { __typename?: 'address', id: any, street_address?: string | null, city?: string | null, post_code?: string | null, country?: string | null } | null, items: Array<{ __typename?: 'item', invoice_id?: any | null, name?: string | null, quantity?: any | null, price?: any | null, total?: any | null, itemId: any }> } | null };
 
 export const Address_FieldsFragmentDoc = gql`
     fragment ADDRESS_FIELDS on address {
@@ -1980,10 +2013,12 @@ export const Address_FieldsFragmentDoc = gql`
     `;
 export const Item_FieldsFragmentDoc = gql`
     fragment ITEM_FIELDS on item {
-  id
+  itemId: id
+  invoice_id
   name
   quantity
   price
+  total
 }
     `;
 export const Invoice_FieldsFragmentDoc = gql`
@@ -1991,17 +2026,17 @@ export const Invoice_FieldsFragmentDoc = gql`
   id
   client_name
   client_email
-  invoice_date
+  date
   status
   project_description
   payment_terms
   client_address {
     ...ADDRESS_FIELDS
   }
-  bill_from {
+  bill_from_address {
     ...ADDRESS_FIELDS
   }
-  invoice_items {
+  items {
     ...ITEM_FIELDS
   }
 }
@@ -2041,6 +2076,39 @@ export function useUpsertInvoiceMutation(baseOptions?: Apollo.MutationHookOption
 export type UpsertInvoiceMutationHookResult = ReturnType<typeof useUpsertInvoiceMutation>;
 export type UpsertInvoiceMutationResult = Apollo.MutationResult<UpsertInvoiceMutation>;
 export type UpsertInvoiceMutationOptions = Apollo.BaseMutationOptions<UpsertInvoiceMutation, UpsertInvoiceMutationVariables>;
+export const DeleteItemDocument = gql`
+    mutation DeleteItem($where: item_bool_exp!) {
+  delete_item(where: $where) {
+    affected_rows
+  }
+}
+    `;
+export type DeleteItemMutationFn = Apollo.MutationFunction<DeleteItemMutation, DeleteItemMutationVariables>;
+
+/**
+ * __useDeleteItemMutation__
+ *
+ * To run a mutation, you first call `useDeleteItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteItemMutation, { data, loading, error }] = useDeleteItemMutation({
+ *   variables: {
+ *      where: // value for 'where'
+ *   },
+ * });
+ */
+export function useDeleteItemMutation(baseOptions?: Apollo.MutationHookOptions<DeleteItemMutation, DeleteItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteItemMutation, DeleteItemMutationVariables>(DeleteItemDocument, options);
+      }
+export type DeleteItemMutationHookResult = ReturnType<typeof useDeleteItemMutation>;
+export type DeleteItemMutationResult = Apollo.MutationResult<DeleteItemMutation>;
+export type DeleteItemMutationOptions = Apollo.BaseMutationOptions<DeleteItemMutation, DeleteItemMutationVariables>;
 export const InvoicesDocument = gql`
     query Invoices($where: invoice_bool_exp, $order_by: [invoice_order_by!], $offset: Int, $limit: Int, $distinct_on: [invoice_select_column!]) {
   invoice(

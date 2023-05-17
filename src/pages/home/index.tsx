@@ -1,7 +1,11 @@
 /// <reference types="vite-plugin-svgr/client" />
 import { useState } from "react";
 import { ReactComponent as NoInvoices } from "../../assets/no-invoices.svg";
-import { Invoice_Status_Enum, useInvoicesQuery } from "../../generated/graphql";
+import {
+  Invoice_Status_Enum,
+  Order_By,
+  useInvoicesQuery,
+} from "../../generated/graphql";
 import InvoiceItem, { InvoiceItemLoading } from "./components/InvoiceItem";
 import Topbar from "./components/Topbar";
 import type { Selection } from "react-aria-components";
@@ -18,6 +22,9 @@ function Homepage() {
     variables: {
       where: {
         status: { _in: Array.from(filterBy) as Invoice_Status_Enum[] },
+      },
+      order_by: {
+        updated_at: Order_By.Desc,
       },
     },
   });
@@ -47,12 +54,9 @@ function Homepage() {
             <InvoiceItem
               key={invoice.id}
               id={invoice.id}
-              dueDate={invoice.invoice_date}
+              dueDate={invoice.date}
               clientName={invoice?.client_name ?? "no client name"}
-              amount={invoice.invoice_items.reduce(
-                (p, c) => p + +`${c.price}`.slice(1) * c.quantity,
-                0
-              )}
+              amount={invoice.items.reduce((p, c) => p + c.total, 0)}
               status={invoice.status}
             />
           ))}
