@@ -72,6 +72,7 @@ export default function InvoiceDetails() {
                 </p>
                 <p className="dark:text-white text-purple-800 text-hs">
                   {invoice.payment_terms &&
+                    invoice.date &&
                     dateFormatter.format(
                       parseDate(invoice.date)
                         .add({

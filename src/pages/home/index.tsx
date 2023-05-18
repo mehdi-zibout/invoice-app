@@ -36,7 +36,6 @@ function Homepage() {
 
     notifyOnNetworkStatusChange: true,
   });
-  console.log(data, "data");
   const {
     data: countData,
     loading: countLoading,
@@ -50,7 +49,6 @@ function Homepage() {
   });
 
   const handleScroll = useCallback(() => {
-    console.log("lol");
     if (
       window.innerHeight + document.documentElement.scrollTop !==
         document.documentElement.offsetHeight ||
@@ -108,7 +106,7 @@ function Homepage() {
                 key={invoice.id}
                 id={invoice.id}
                 dueDate={
-                  invoice?.payment_terms
+                  invoice?.payment_terms && invoice.date
                     ? parseDate(invoice.date)
                         .add({
                           days: getPaymentTermsDays(invoice?.payment_terms),
